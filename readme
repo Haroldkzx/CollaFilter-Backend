@@ -1,0 +1,19 @@
+helper.py ( for creating the functions)
+
+main.py ( reponsible for api calling)
+
+model.py ( structure of form )
+
+mongodb_commands.py ( communication to database )
+
+# pip install pandas
+# pip install pymongo
+# pip install -U scikit-learn
+# pip install fastapi
+# pip install flask
+# pip install "uvicorn[standard]"
+# pip install minio
+# pip install seaborn
+# pip install scikit-surprise
+# python -m uvicorn main:app --reload
+# Str(uuid4())
