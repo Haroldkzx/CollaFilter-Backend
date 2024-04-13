@@ -56,3 +56,18 @@ class SessionState(BaseModel):
     role: str
     uuid: str
 
+class Resets(BaseModel):
+    token: str
+    newpassword: str
+
+class ForgetPasswordRequest(BaseModel):
+    email: str
+
+class ConnectionConfig(BaseModel):
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_SERVER: str
+    MAIL_PORT: int
+    MAIL_TLS : bool
+    MAIL_SSL : bool
+

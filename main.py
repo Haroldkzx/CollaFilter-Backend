@@ -3,11 +3,13 @@ from uuid import uuid4
 
 from fastapi.encoders import jsonable_encoder
 
-from helper import isValidPassword
-from model import LoginDetails, PartnerRegister, UserRegister, Product, Category, SessionState, Rating
-from mongo_commands import get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts
-
+from helper import isValidPassword, generate_unique_token
+from model import LoginDetails, PartnerRegister, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets
+from mongo_commands import get_email_resets, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, store_reset_token
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 import uvicorn
+import time
 
 from fastapi import (
     FastAPI,
@@ -19,7 +21,6 @@ from fastapi import (
     Request,
     Body,
 )
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import random
 
 app = FastAPI()
@@ -29,6 +30,63 @@ users = {}
 # In-memory session storage (for demonstration purposes)
 sessions = {}
 
+# ======================================= RESET PASSWORD ========================================
+conf = ConnectionConfig(
+    MAIL_USERNAME = "collafilter@gmail.com",
+    MAIL_PASSWORD = "wbyo slqi yljy ztot",
+    MAIL_FROM = "collafilter@gmail.com",
+    MAIL_PORT = 587,
+    MAIL_SERVER = "smtp.gmail.com",
+    MAIL_STARTTLS=True,
+    MAIL_SSL_TLS=False
+)
+
+html = """
+<html>
+    <head></head>
+    <body>
+        <h1>Reset Password Instructions</h1>
+        <p>To reset your password, click on the following link: <a href="http://localhost:3000/resetpassword/{token}">Reset Password</a></p>
+    </body>
+</html>
+"""
+
+@app.post("/forgetpassword")
+async def forget_password(email: ForgetPasswordRequest):
+    user = get_user(email.email)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    token = generate_unique_token()
+
+    store_reset_token(email.email, token)
+
+    # Send reset password instructions to the user's email
+    message = MessageSchema(
+        subject="Password Reset Instructions",
+        recipients=[email.email],
+        body=html.replace("{token}", token),
+        subtype="html"
+    )
+    
+    fm = FastMail(conf)
+    await fm.send_message(message)  # Await the send_message method
+
+    return "Reset password instructions sent to your email"
+
+@app.post("/resetpassword")
+def reset_password(reset : Resets):
+    token = reset.token
+    newpassword = reset.newpassword
+    email = get_email_resets(token)
+    print(email)
+    return email
+
+
+
+# ======================================= RESET PASSWORD ========================================
+
 
 def get_session(email, uuid):
     session_uuid = sessions["email"]
@@ -36,12 +94,6 @@ def get_session(email, uuid):
         return sessions["email"]
     else:
         return False
-
-
-@app.get("/", status_code=200)
-def read_root(response: Response):
-    response.status_code = status.HTTP_401_UNAUTHORIZED
-    return {"Hello": "World"}
 
 
 @app.get("/items/{item_id}")

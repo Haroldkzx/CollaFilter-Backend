@@ -1,10 +1,12 @@
 from pymongo import MongoClient
+import secrets
 
 client = MongoClient("mongodb+srv://admin:admin@cluster0.immhkre.mongodb.net/CollaFilter")
 ACCOUNT_COLLECTION = "accounts"
 PRODUCTS_COLLECTION ='products'
 CATEGORY_COLLECTION ='categories'
 RATING_COLLECTION = 'ratings'
+RESET_COLLECTION = 'Resets'
 
 
 def connect(collection):
@@ -57,21 +59,28 @@ def get_category():
 
     return category_data
 
+# ========================================
+def store_reset_token(email, token):
+    col, _= connect(RESET_COLLECTION)
+    query = {"email": email, "token": token}
+    result = col.insert_one(query)
+    return result
 
+def get_reset_token(email):
+    col, _= connect(RESET_COLLECTION)
+    query = {"email": email}
+    token_data = col.find_one(query)
+    return token_data
 
-"""
-{
-    'uuid': // store the products id
-    'product_link': // link to partner
-    'image': //
-    'name': //name of product
-    'category': str
-    'sub category: str
-    'price'://
-    'tags': array [tag]
-    'product text':
-}
-"""
+def get_email_resets(token):
+    col, _= connect(RESET_COLLECTION)
+    query = {"token": token}
+    projection = {"token": 0, "email": 1} 
+    email = col.find_one(query, projection)
+    return email
+
+# ========================================
+
 def get_useraccounts():
     col, _ = connect(ACCOUNT_COLLECTION)  
     query = {"role": "user"}  
