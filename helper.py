@@ -1,6 +1,6 @@
 # helper.py
 import bcrypt
-
+import secrets
 
 
 def hash_password(password):
@@ -18,3 +18,6 @@ def isValidPassword(input_password, hashed_password):
 
     # Check if the input password matches the hashed password
     return bcrypt.checkpw(input_password_bytes, hashed_password_bytes)
+
+def generate_unique_token():
+    return secrets.token_urlsafe(20) #make longer to decrease randomness
