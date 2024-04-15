@@ -71,3 +71,8 @@ class ConnectionConfig(BaseModel):
     MAIL_TLS : bool
     MAIL_SSL : bool
 
+class UpdatedUserData(BaseModel):
+    name: str
+    phone: str
+    country: str
+   
