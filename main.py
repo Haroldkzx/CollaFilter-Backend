@@ -3,9 +3,9 @@ from uuid import uuid4
 
 from fastapi.encoders import jsonable_encoder
 
-from helper import isValidPassword, generate_unique_token
-from model import LoginDetails, PartnerRegister, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets
-from mongo_commands import get_email_resets, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, store_reset_token
+from helper import hash_password, isValidPassword, generate_unique_token
+from model import LoginDetails, PartnerRegister, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData
+from mongo_commands import delete_token_data, get_email_resets, get_token, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, store_reset_token, update_password, find_user_by_email, update_user_by_id
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 import uvicorn
@@ -29,6 +29,8 @@ users = {}
 
 # In-memory session storage (for demonstration purposes)
 sessions = {}
+
+
 
 # ======================================= RESET PASSWORD ========================================
 conf = ConnectionConfig(
@@ -75,15 +77,35 @@ async def forget_password(email: ForgetPasswordRequest):
 
     return "Reset password instructions sent to your email"
 
+@app.get("/verifytoken/{token}")
+def verify_token(token: str):
+    # Check if the token is valid (e.g., exists in the database)
+    if get_token(token):
+        return {"valid": True}
+    else:
+        return {"valid": False}
+
 @app.post("/resetpassword")
-def reset_password(reset : Resets):
+def reset_password(reset : Resets, response: Response):
     token = reset.token
-    newpassword = reset.newpassword
+    newPassword = hash_password(reset.newpassword)
     email = get_email_resets(token)
-    print(email)
-    return email
+    
+    if email:
+        # If the email is found, update the password
+        email = email["email"]
+        update_result = update_password(email, newPassword)
+        if update_result.modified_count == 1:
+            delete_token_data(token)
+            return {"message": "Password reset successfully"}
+        else:
+            # If update was unsuccessful, handle accordingly
+            response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return {"message": "Failed to reset password"}
 
-
+    # If the email associated with the token is not found
+    response.status_code = status.HTTP_404_NOT_FOUND
+    return {"message": "Email not found"}
 
 # ======================================= RESET PASSWORD ========================================
 
@@ -112,19 +134,21 @@ def login(login_details: LoginDetails, response: Response):
         print("Invalid username or password 1")
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return "Invalid username or password"
-
+    print(user)
     if user:
         # check if password match
         if not isValidPassword(password, user["password"]):
-            print("Invalid username or password")
             response.status_code = status.HTTP_401_UNAUTHORIZED
             return "Invalid username or password 2"
-        if user["role"] == "partner" and user["authenticate"] == "0":
-            print("Awaiting admin approval")
+        if user["role"] == "Partner" and user["authenticate"] == "0":
             response.status_code = status.HTTP_401_UNAUTHORIZED
             return "Awaiting admin approval"
+        if user["suspended"] == "1":
+            response.status_code = status.HTTP_401_UNAUTHORIZED
+            return "Account suspended"
 
     ## all checks done
+    print(user)
     user_session = {**user, "session_uuid": uuid4(), "role": user["role"]}
     sessions[user["email"]] = user_session
     return user_session
@@ -149,8 +173,10 @@ def registeruser(register_user : UserRegister, response: Response):
         response.status_code = status.HTTP_409_CONFLICT
         return "Email already registered"
     
+    hashed_password = hash_password(register_user.password)
     register_data = register_user.model_dump()
-    put_account({**register_data})
+    register_data['password'] = hashed_password
+    put_account(register_data)
     return "User Registered successfully"
 
 @app.post("/registerpartner")
@@ -164,9 +190,11 @@ def registerpartner(register_partner: PartnerRegister, response: Response):
         response.status_code = status.HTTP_409_CONFLICT
         return "Email already registered"
 
+    hashed_password = hash_password(register_partner.password)
     register_data = register_partner.model_dump()
+    register_data['password'] = hashed_password
     print(register_data)
-    put_account({**register_data})
+    put_account(register_data)
     return "Partner Registered successfully"
 
 # ============================== Ratings ==============================
@@ -227,5 +255,26 @@ def update_user_data(user_id: str, user: UserRegister):
 @app.get("/get_partneraccounts")
 def get_partner_accounts(response: Response):
     accounts = get_partneraccounts() 
-    filtered_accounts = [account for account in accounts if account.get("authentication") == '1']
-    return {"accounts": filtered_accounts}
+    print(accounts)
+    return {"accounts": accounts}
+
+@app.get('/user')
+async def get_user(user: UserRegister):
+    try:
+        user_data = find_user_by_email(user.email)
+        if not user_data:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred while fetching user data")
+
+# Backend endpoint to update user data
+@app.put('/user/{user_id}')
+async def update_user(user_id: str, updated_user_data: UpdatedUserData):
+    try:
+        updated_user = update_user_by_id(user_id, updated_user_data.dict())
+        if not updated_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return updated_user
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred while updating user data")

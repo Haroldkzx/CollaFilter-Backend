@@ -14,6 +14,24 @@ def connect(collection):
     collection = db[collection]
     return collection, db
 
+# Updates password from restpassword.js
+def update_password(email, new_password):
+    col, _ = connect(ACCOUNT_COLLECTION)
+    query = {"email": email}
+    update_query = {"$set": {"password": new_password}}
+    result = col.update_one(query, update_query)
+    return result
+
+def delete_token_data(token):
+    col, _ = connect(RESET_COLLECTION)
+    result = col.delete_one({"token": token})
+    return result.deleted_count
+
+def get_token(token):
+    col, _= connect(RESET_COLLECTION)
+    query = {"token": token}
+    token_data = col.find_one(query)
+    return token_data
 
 def get_user(email):
     col, _ = connect(ACCOUNT_COLLECTION)
@@ -75,7 +93,7 @@ def get_reset_token(email):
 def get_email_resets(token):
     col, _= connect(RESET_COLLECTION)
     query = {"token": token}
-    projection = {"token": 0, "email": 1} 
+    projection = {"_id": 0, "email": 1} 
     email = col.find_one(query, projection)
     return email
 
@@ -83,14 +101,20 @@ def get_email_resets(token):
 
 def get_useraccounts():
     col, _ = connect(ACCOUNT_COLLECTION)  
-    query = {"role": "user"}  
+    query = {"role": {"$in": ["User", "user"]}} 
     projection = {"_id": False} 
     result = col.find(query, projection)  
     return list(result)  
 
 def get_partneraccounts():
     col, _ = connect(ACCOUNT_COLLECTION)  
-    query = {"role": "partner"}  
+    query = {"role": {"$in": ["Partner", "partner"]}, "authenticate": "1"}  
     projection = {"_id": False} 
     result = col.find(query, projection)  
-    return list(result)  
+    return list(result)
+
+def find_user_by_email(email):
+    return ACCOUNT_COLLECTION.find_one({'email': email})
+
+def update_user_by_id(user_id, updated_data):
+    return ACCOUNT_COLLECTION.find_one_and_update({'_id': user_id}, {'$set': updated_data}, return_document=True)
