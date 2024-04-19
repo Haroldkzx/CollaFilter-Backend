@@ -101,14 +101,29 @@ def get_email_resets(token):
 
 def get_useraccounts():
     col, _ = connect(ACCOUNT_COLLECTION)  
-    query = {"role": {"$in": ["User", "user"]}} 
+    query = {"role": "User"} 
     projection = {"_id": False} 
     result = col.find(query, projection)  
-    return list(result)  
+    return list(result)
+
 
 def get_partneraccounts():
     col, _ = connect(ACCOUNT_COLLECTION)  
     query = {"role": {"$in": ["Partner", "partner"]}, "authenticate": "1"}  
+    projection = {"_id": False} 
+    result = col.find(query, projection)  
+    return list(result)
+
+def get_unregpartneraccounts():
+    col, _ = connect(ACCOUNT_COLLECTION)  
+    query = {"role": {"$in": ["Partner", "partner"]}, "authenticate": "0"}  
+    projection = {"_id": False} 
+    result = col.find(query, projection)  
+    return list(result)
+
+def get_useraccounts():
+    col, _ = connect(ACCOUNT_COLLECTION)  
+    query = {"role": {"$in": ["User", "user"]}}  
     projection = {"_id": False} 
     result = col.find(query, projection)  
     return list(result)
@@ -118,3 +133,39 @@ def find_user_by_email(email):
 
 def update_user_by_id(user_id, updated_data):
     return ACCOUNT_COLLECTION.find_one_and_update({'_id': user_id}, {'$set': updated_data}, return_document=True)
+
+def suspend_user(email):
+    col, _ = connect(ACCOUNT_COLLECTION) 
+    query = {"email": email} 
+    update = {"$set": {"suspended": "1"}}
+    result = col.update_one(query, update)
+    return result
+
+def authenticate_partner(email):
+    col, _ = connect(ACCOUNT_COLLECTION) 
+    query = {"email": email} 
+    update = {"$set": {"authenticate": "1"}}
+    result = col.update_one(query, update)
+    return result
+
+def reject_partner(email):
+    col, _ = connect(ACCOUNT_COLLECTION) 
+    query = {"email": email} 
+    result = col.delete_one(query)
+    return result
+
+
+def activate_user(email):
+    col, _ = connect(ACCOUNT_COLLECTION) 
+    query = {"email": email} 
+    update = {"$set": {"suspended": "0"}}
+    result = col.update_one(query, update)
+    return result
+
+def update_user(email, updated_details):
+    col, _ = connect(ACCOUNT_COLLECTION) 
+    query = {"email": email}  
+    update = {"$set": updated_details}
+    result = col.update_one(query, update)
+    print (result)
+    return result

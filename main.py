@@ -4,9 +4,8 @@ from uuid import uuid4
 from fastapi.encoders import jsonable_encoder
 
 from helper import hash_password, isValidPassword, generate_unique_token
-from model import LoginDetails, PartnerRegister, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData
-from mongo_commands import delete_token_data, get_email_resets, get_token, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, store_reset_token, update_password, find_user_by_email, update_user_by_id
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from model import Email, LoginDetails, Partner, PartnerRegister, UpdateUserData, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData
+from mongo_commands import activate_user, authenticate_partner, delete_token_data, get_email_resets, get_token, get_unregpartneraccounts, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, reject_partner, store_reset_token, suspend_user, update_password, find_user_by_email, update_user_by_id
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 import uvicorn
 import time
@@ -129,6 +128,7 @@ def login(login_details: LoginDetails, response: Response):
     email = login_details.email
     password = login_details.password
     user = get_user(email)
+    print(user)
 
     if not user:
         print("Invalid username or password 1")
@@ -219,6 +219,13 @@ def get_subcategories(category: str):
     else:
         raise HTTPException(status_code=404, detail="Category not found")
 
+@app.post("/get_userdetails")
+def get_userdetails(email : Email):
+    user = get_user(email.email)
+    return {"accounts": user}
+
+@app.post("update_user")
+
 
 # ============================== Add Product ==============================
 @app.post("/add_product")
@@ -227,29 +234,35 @@ def add_product(product: Product, response: Response):
     put_product({'product_id': str(uuid4()), **product_data})
     return "Product added successfully"
 
-
-
-# ============================== User Account ==============================
 @app.get("/get_useraccounts")
-def get_user_accounts(response: Response):
+def get_user_accounts():
     accounts = get_useraccounts() 
     print(accounts)
     return {"accounts": accounts}
 
+# ============================== User Account ==============================
 
 # Endpoint to update user data
-@app.put("/api/update_user_data/{user_id}")
-def update_user_data(user_id: str, user: UserRegister):
-    # Check if the user exists in the database
-    if user_id not in users:
-        raise HTTPException(status_code=404, detail="User not found")
+# @app.put("/api/update_user_data/{user_id}")
+# def update_user_data(user_id: str, user: UserRegister):
+#     # Check if the user exists in the database
+#     if user_id not in users:
+#         raise HTTPException(status_code=404, detail="User not found")
 
-    # Update user data in the database
-    users[user_id].update(user.dict())
+#     # Update user data in the database
+#     users[user_id].update(user.dict())
 
-    # Return a success message
-    return {"message": "User data updated successfully"}
+#     # Return a success message
+#     return {"message": "User data updated successfully"}
 
+# @app.put("/update_useraccount")
+# def update_user(email : email)
+
+@app.post("/update_user_data")
+def update_user_data(data: UpdateUserData):
+    print(data)
+    update_user(data.email,data)
+    return {"message": "User data updated successfully! "}
 
 # ============================== Partner Account ==============================
 @app.get("/get_partneraccounts")
@@ -258,15 +271,72 @@ def get_partner_accounts(response: Response):
     print(accounts)
     return {"accounts": accounts}
 
-@app.get('/user')
-async def get_user(user: UserRegister):
-    try:
-        user_data = find_user_by_email(user.email)
-        if not user_data:
-            raise HTTPException(status_code=404, detail="User not found")
-        return user_data
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="An error occurred while fetching user data")
+@app.post("/suspend_user")
+def suspend_partner_account( email : Email):
+    user = email.email
+    partner = get_user(user)
+
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+
+    result = suspend_user(user)
+    if result.modified_count == 0:
+        raise HTTPException(status_code=500, detail="Failed to suspend partner")
+
+    return {"message": "Partner suspended successfully"}
+
+@app.post("/activate_user")
+def activate_partner_account( email : Email):
+    user = email.email
+    partner = get_user(user)
+
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+
+    # Update the partner's 'suspended' field to 1
+    result = activate_user(user)
+    if result.modified_count == 0:
+        raise HTTPException(status_code=500, detail="Failed to activate partner")
+
+    return {"message": "Partner suspended successfully"}
+
+# ============================== Unregister Partner Account ==============================
+@app.get("/get_unregpartneraccounts")
+def get_unregpartner_accounts(response: Response):
+    accounts = get_unregpartneraccounts() 
+    print(accounts)
+    return {"accounts": accounts}
+
+@app.post("/authenticate_partner")
+def authenticate_partner_account(email : Email):
+    user = email.email
+    partner = get_user(user)
+
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+
+    # Update the partner's 'suspended' field to 1
+    result = authenticate_partner(user)
+    if result.modified_count == 0:
+        raise HTTPException(status_code=500, detail="Failed to activate partner")
+
+    return {"message": "Partner suspended successfully"}
+
+@app.post("/reject_partner")
+def suspend_partner_account( email : Email):
+    user = email.email
+    partner = get_user(user)
+    print(partner)
+
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+
+    result = reject_partner(user)
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=500, detail="Failed to suspend partner")
+
+    return {"message": "Partner suspended successfully"}
+
 
 # Backend endpoint to update user data
 @app.put('/user/{user_id}')
