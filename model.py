@@ -5,6 +5,41 @@ from pydantic import BaseModel
 class LoginDetails(BaseModel):
     email: str
     password: str
+ 
+class Email(BaseModel):
+    email: str
+
+class Partner(BaseModel):
+    name: str
+    email: str
+    password: str
+    UEN: str
+    phone: str
+    doe: str
+    category: str
+    link: str
+    country: str
+    role: str 
+    authenticate: str
+    suspended: str
+
+class UpdateUserData(BaseModel):
+    name: str
+    dob: str
+    email: str
+    phone: str
+    country: str
+
+class User(BaseModel):
+    name: str
+    email: str
+    password: str
+    gender: str
+    phone: str
+    dob: str
+    country: str
+    role: str
+    suspended: str 
 
 class UserRegister(BaseModel):
     name: str
