@@ -12,16 +12,12 @@ class Email(BaseModel):
 class Partner(BaseModel):
     name: str
     email: str
-    password: str
     UEN: str
     phone: str
     doe: str
     category: str
     link: str
     country: str
-    role: str 
-    authenticate: str
-    suspended: str
 
 class UpdateUserData(BaseModel):
     name: str
@@ -33,13 +29,9 @@ class UpdateUserData(BaseModel):
 class User(BaseModel):
     name: str
     email: str
-    password: str
-    gender: str
     phone: str
     dob: str
     country: str
-    role: str
-    suspended: str 
 
 class UserRegister(BaseModel):
     name: str

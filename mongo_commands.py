@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import secrets
 
 client = MongoClient("mongodb+srv://admin:admin@cluster0.immhkre.mongodb.net/CollaFilter")
+
 ACCOUNT_COLLECTION = "accounts"
 PRODUCTS_COLLECTION ='products'
 CATEGORY_COLLECTION ='categories'
@@ -128,12 +129,6 @@ def get_useraccounts():
     result = col.find(query, projection)  
     return list(result)
 
-def find_user_by_email(email):
-    return ACCOUNT_COLLECTION.find_one({'email': email})
-
-def update_user_by_id(user_id, updated_data):
-    return ACCOUNT_COLLECTION.find_one_and_update({'_id': user_id}, {'$set': updated_data}, return_document=True)
-
 def suspend_user(email):
     col, _ = connect(ACCOUNT_COLLECTION) 
     query = {"email": email} 
@@ -165,7 +160,18 @@ def activate_user(email):
 def update_user(email, updated_details):
     col, _ = connect(ACCOUNT_COLLECTION) 
     query = {"email": email}  
-    update = {"$set": updated_details}
+    updated_dict = updated_details.__dict__
+
+    # Remove the "__dict__" key and any other unwanted keys
+    updated_dict.pop("__dict__", None)
+    
+    # Construct the update query
+    update = {"$set": updated_dict}
     result = col.update_one(query, update)
-    print (result)
-    return result
+    
+    if result.modified_count == 1:
+        # Document was updated successfully
+        return "updated"
+    else:
+        # Document was not updated (either not found or no changes)
+        return "no changes"

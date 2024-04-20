@@ -4,8 +4,8 @@ from uuid import uuid4
 from fastapi.encoders import jsonable_encoder
 
 from helper import hash_password, isValidPassword, generate_unique_token
-from model import Email, LoginDetails, Partner, PartnerRegister, UpdateUserData, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData
-from mongo_commands import activate_user, authenticate_partner, delete_token_data, get_email_resets, get_token, get_unregpartneraccounts, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, reject_partner, store_reset_token, suspend_user, update_password, find_user_by_email, update_user_by_id
+from model import Email, LoginDetails, Partner, PartnerRegister, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData
+from mongo_commands import activate_user, authenticate_partner, delete_token_data, get_email_resets, get_token, get_unregpartneraccounts, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, reject_partner, store_reset_token, suspend_user, update_password, update_user
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 import uvicorn
 import time
@@ -224,8 +224,6 @@ def get_userdetails(email : Email):
     user = get_user(email.email)
     return {"accounts": user}
 
-@app.post("update_user")
-
 
 # ============================== Add Product ==============================
 @app.post("/add_product")
@@ -242,27 +240,37 @@ def get_user_accounts():
 
 # ============================== User Account ==============================
 
-# Endpoint to update user data
-# @app.put("/api/update_user_data/{user_id}")
-# def update_user_data(user_id: str, user: UserRegister):
-#     # Check if the user exists in the database
-#     if user_id not in users:
-#         raise HTTPException(status_code=404, detail="User not found")
-
-#     # Update user data in the database
-#     users[user_id].update(user.dict())
-
-#     # Return a success message
-#     return {"message": "User data updated successfully"}
-
-# @app.put("/update_useraccount")
-# def update_user(email : email)
-
 @app.post("/update_user_data")
-def update_user_data(data: UpdateUserData):
-    print(data)
-    update_user(data.email,data)
-    return {"message": "User data updated successfully! "}
+def update_user_data(data: User):
+    try:
+        email = data.email
+        print("before")
+        is_updated = update_user(email, data)
+        if is_updated:
+            return {"message": "User data updated successfully!!!"}
+        else:
+            return {"message": "No changes or document not found."}
+    
+    except Exception as e:
+        # Handle any exceptions that occur during the update operation
+        print("uh oh")
+        return {"error": str(e)}
+    
+@app.post("/update_partner_data")
+def update_partner_data(data: Partner):
+    try:
+        email = data.email
+        is_updated = update_user(email, data)
+        if is_updated:
+            return {"message": "User data updated successfully!!!"}
+        else:
+            return {"message": "No changes or document not found."}
+    
+    except Exception as e:
+        # Handle any exceptions that occur during the update operation
+        print("uh oh")
+        return {"error": str(e)}
+
 
 # ============================== Partner Account ==============================
 @app.get("/get_partneraccounts")
@@ -339,12 +347,12 @@ def suspend_partner_account( email : Email):
 
 
 # Backend endpoint to update user data
-@app.put('/user/{user_id}')
-async def update_user(user_id: str, updated_user_data: UpdatedUserData):
-    try:
-        updated_user = update_user_by_id(user_id, updated_user_data.dict())
-        if not updated_user:
-            raise HTTPException(status_code=404, detail="User not found")
-        return updated_user
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="An error occurred while updating user data")
+# @app.put('/user/{user_id}')
+# async def update_user(user_id: str, updated_user_data: UpdatedUserData):
+#     try:
+#         updated_user = update_user_by_id(user_id, updated_user_data.dict())
+#         if not updated_user:
+#             raise HTTPException(status_code=404, detail="User not found")
+#         return updated_user
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail="An error occurred while updating user data")
