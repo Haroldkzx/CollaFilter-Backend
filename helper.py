@@ -18,3 +18,5 @@ def isValidPassword(input_password, hashed_password):
 
 def generate_unique_token():
     return secrets.token_urlsafe(20) #make longer to decrease randomness
+
+

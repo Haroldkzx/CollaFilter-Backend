@@ -66,18 +66,27 @@ def put_rating(rating_details):
 
 def get_category():
     col, _ = connect(CATEGORY_COLLECTION)
-    categories = col.find({}, {"Category": 1, "subCategory": 1, "_id": 0})
+    categories = col.find({}, {"category": 1, "_id": 0})
 
     category_data = {}
     for doc in categories:
-        category = doc["Category"]
-        subcategory = doc["subCategory"]
-        if category not in category_data:
-            category_data[category] = []
-        category_data[category].extend(subcategory)
+        category = doc.get("category")
+        if category:
+            category_data[category] = []  # Initialize empty list for each category
 
     return category_data
 
+def update_authenticate_email(email):
+    col, _= connect(ACCOUNT_COLLECTION)
+    query = {"email": email}
+    update_query = {"$set": {"authenticate": "1"}}
+    result = col.update_one(query, update_query)
+    if result.modified_count == 1:
+        print("updated authenticate")
+        return "Account authenticated"
+    else:
+        print("failed to authenticate")
+        return "Unable to authenticate"
 # ========================================
 def store_reset_token(email, token):
     col, _= connect(RESET_COLLECTION)
@@ -91,7 +100,7 @@ def get_reset_token(email):
     token_data = col.find_one(query)
     return token_data
 
-def get_email_resets(token):
+def get_email_from_token(token):
     col, _= connect(RESET_COLLECTION)
     query = {"token": token}
     projection = {"_id": 0, "email": 1} 
@@ -175,3 +184,85 @@ def update_user(email, updated_details):
     else:
         # Document was not updated (either not found or no changes)
         return "no changes"
+    
+def get_products(userid):
+    col, _ = connect(PRODUCTS_COLLECTION) 
+    query = {"user_id": userid}
+    projection = {"_id": 0}
+    products = col.find(query, projection)
+    return list(products)
+
+def get_allproducts():
+    col, _ = connect(PRODUCTS_COLLECTION) 
+    projection = {"_id": False} 
+    all_products = list(col.find({}, projection))
+    return all_products
+
+def delete_category(category):
+    col, _ = connect(CATEGORY_COLLECTION) 
+    query = {"category": category}
+    result = col.delete_one(query)
+    if result.deleted_count == 1:
+        # Document was updated successfully
+        return "deleted"
+    else:
+        # Document was not updated (either not found or no changes)
+        return "no changes"
+
+def add_category(category):
+    col, _ = connect(CATEGORY_COLLECTION)
+    doc = {"category": category}  # Assuming 'category' is the key name
+    result = col.insert_one(doc)
+    if result:
+        return "Category added successfully"
+    else:
+        return "Failed to add category"
+    
+def update_category(old_cat,new_cat):
+    col, _ = connect(CATEGORY_COLLECTION)
+    query = {"category": old_cat}
+    update = {"$set": {"category": new_cat}}
+    
+    # Update the document with the new category
+    result = col.update_one(query, update)
+    if result.modified_count == 1:
+        # Document was updated successfully
+        return "updated"
+    else:
+        # Document was not updated (either not found or no changes)
+        return "no changes"
+    
+def delete_product(product):
+    col, _ = connect(PRODUCTS_COLLECTION) 
+    query = {"category": product}
+    result = col.delete_one(query)
+    if result.deleted_count == 1:
+        # Document was updated successfully
+        return "deleted"
+    else:
+        # Document was not updated (either not found or no changes)
+        return "no changes"
+    
+def get_partnername(userid):
+    col, _ = connect(ACCOUNT_COLLECTION)
+    query = {"user_id": userid}
+    projection = {"_id" : 0}
+    result = col.find_one(query, projection)
+    return result
+
+def del_product(productid):
+    col, _ = connect(PRODUCTS_COLLECTION)
+    query = {"product_id": productid}
+    result = col.delete_one(query)
+    if result.deleted_count == 1:
+        return True  # Deletion successful
+    else:
+        return False  # Deletion failed
+
+def get_product_by_category(category):
+    col, _ = connect(PRODUCTS_COLLECTION)
+    print(col)
+    query = {"category": category}
+    projection = {"_id" : 0}
+    result = col.find(query, projection)
+    return list(result)
