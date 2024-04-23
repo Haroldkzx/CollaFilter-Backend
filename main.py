@@ -4,11 +4,13 @@ from uuid import uuid4
 from fastapi.encoders import jsonable_encoder
 
 from helper import hash_password, isValidPassword, generate_unique_token
-from model import Email, LoginDetails, Partner, PartnerRegister, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData
-from mongo_commands import activate_user, authenticate_partner, delete_token_data, get_email_resets, get_token, get_unregpartneraccounts, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, reject_partner, store_reset_token, suspend_user, update_password, update_user
+from model import EditedCategory, Email, LoginDetails, Partner, PartnerRegister, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData, userID
+from mongo_commands import activate_user, add_category, authenticate_partner, del_product, delete_token_data, get_allproducts, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, reject_partner, store_reset_token, suspend_user, update_authenticate_email, update_category, update_password, update_user, delete_category
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 import uvicorn
 import time
+
+from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import (
     FastAPI,
@@ -23,6 +25,18 @@ from fastapi import (
 import random
 
 app = FastAPI()
+
+app.add_middleware(
+       CORSMiddleware,
+       allow_origins=[
+           "https://<your-amplify-domain>.amplifyapp.com",  # Replace this with your actual frontend domain
+           "http://localhost:3000",  # Allow localhost for development purposes
+       ],
+       allow_credentials=True,
+       allow_methods=["*"],  # Allows all methods
+       allow_headers=["*"],  # Allows all headers
+   )
+
 # User Database (for demonstration purposes)
 users = {}
 
@@ -42,12 +56,22 @@ conf = ConnectionConfig(
     MAIL_SSL_TLS=False
 )
 
-html = """
+resetpasswordhtml = """
 <html>
     <head></head>
     <body>
         <h1>Reset Password Instructions</h1>
         <p>To reset your password, click on the following link: <a href="http://localhost:3000/resetpassword/{token}">Reset Password</a></p>
+    </body>
+</html>
+"""
+
+emailauthenticationhtml = """
+<html>
+    <head></head>
+    <body>
+        <h1>Authenticate account Instructions</h1>
+        <p>To authenticate your account, click on the following link: <a href="http://localhost:3000/resetpassword/{token}">Reset Password</a></p>
     </body>
 </html>
 """
@@ -67,7 +91,7 @@ async def forget_password(email: ForgetPasswordRequest):
     message = MessageSchema(
         subject="Password Reset Instructions",
         recipients=[email.email],
-        body=html.replace("{token}", token),
+        body=resetpasswordhtml.replace("{token}", token),
         subtype="html"
     )
     
@@ -83,12 +107,24 @@ def verify_token(token: str):
         return {"valid": True}
     else:
         return {"valid": False}
+    
+@app.get("/verifyemail/{token}")
+def verify_emailtoken(token: str):
+    # Check if the token is valid (e.g., exists in the database)
+    if get_token(token):
+        email_token = get_email_from_token(token)
+        email = email_token["email"]
+        update_authenticate_email(email)
+        delete_token_data(token)
+        return {"authenticated": True}
+    else:
+        return {"authenticated": False}
 
 @app.post("/resetpassword")
 def reset_password(reset : Resets, response: Response):
     token = reset.token
     newPassword = hash_password(reset.newpassword)
-    email = get_email_resets(token)
+    email = get_email_from_token(token)
     
     if email:
         # If the email is found, update the password
@@ -163,7 +199,7 @@ def logout(response: Response):
 
 # ============================== Register ==============================
 @app.post("/registeruser")
-def registeruser(register_user : UserRegister, response: Response):
+async def registeruser(register_user : UserRegister, response: Response):
     if not all(register_user.model_dump().values()):
         response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
         return "All fields are required"
@@ -176,8 +212,22 @@ def registeruser(register_user : UserRegister, response: Response):
     hashed_password = hash_password(register_user.password)
     register_data = register_user.model_dump()
     register_data['password'] = hashed_password
-    put_account(register_data)
-    return "User Registered successfully"
+    put_account({'user_id': str(uuid4()), **register_data})
+    verification_token = generate_unique_token()
+    store_reset_token(register_user.email, verification_token)
+
+    # Construct email message
+    message = MessageSchema(
+        subject="Account Verification",
+        recipients=[register_user.email],
+        body=f"Click the following link to verify your account: <a href='http://localhost:3000/VerifyEmail/{verification_token}'>Verify Account</a>",
+        subtype="html"
+    )
+
+    # Send email
+    fm = FastMail(conf)
+    await fm.send_message(message)
+    return {"message": "Verification email sent successfully"}
 
 @app.post("/registerpartner")
 def registerpartner(register_partner: PartnerRegister, response: Response):
@@ -194,7 +244,7 @@ def registerpartner(register_partner: PartnerRegister, response: Response):
     register_data = register_partner.model_dump()
     register_data['password'] = hashed_password
     print(register_data)
-    put_account(register_data)
+    put_account({'user_id': str(uuid4()), **register_data})
     return "Partner Registered successfully"
 
 # ============================== Ratings ==============================
@@ -331,7 +381,7 @@ def authenticate_partner_account(email : Email):
     return {"message": "Partner suspended successfully"}
 
 @app.post("/reject_partner")
-def suspend_partner_account( email : Email):
+def suspend_partner_account(email : Email):
     user = email.email
     partner = get_user(user)
     print(partner)
@@ -345,14 +395,50 @@ def suspend_partner_account( email : Email):
 
     return {"message": "Partner suspended successfully"}
 
+@app.post("/get_products")
+def get_product(user_id : userID):
+    id=user_id.user_id
+    products = get_products(id)
+    return {"products": products}
 
-# Backend endpoint to update user data
-# @app.put('/user/{user_id}')
-# async def update_user(user_id: str, updated_user_data: UpdatedUserData):
-#     try:
-#         updated_user = update_user_by_id(user_id, updated_user_data.dict())
-#         if not updated_user:
-#             raise HTTPException(status_code=404, detail="User not found")
-#         return updated_user
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail="An error occurred while updating user data")
+@app.get("/get_allproducts")
+def get_all_products():
+    products = get_allproducts()
+    return {"products": products}
+
+@app.post("/delete_category")
+def del_category(category: Category):
+    cat = category.category
+    result = delete_category(cat)
+    return result
+
+@app.post("/add_categories")
+def add_categories(category: Category):
+    cat = category.category
+    print(cat)
+    result = add_category(cat)
+    return result
+
+@app.post("/edit_category")
+def edit_categories(category: EditedCategory):
+    new_cat=category.newCategory
+    old_cat=category.oldCategory
+    result = update_category(old_cat,new_cat)
+    return result
+
+@app.get("/get_partner_name/{user_id}")
+def get_partner_name(user_id: str):
+   result = get_partnername(user_id)
+   print(result)
+   return result
+
+@app.post("/delete_product/{product_id}")
+def delete_product(product_id: str):
+    result = del_product(product_id)
+    return result
+
+@app.get("/get_products_by_category/{category}")
+def get_product_by_category(category: str):
+    print(category)
+    result = get_product_by_category(category)
+    return result

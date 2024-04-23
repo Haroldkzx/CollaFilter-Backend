@@ -9,6 +9,9 @@ class LoginDetails(BaseModel):
 class Email(BaseModel):
     email: str
 
+class userID(BaseModel):
+    user_id: str
+
 class Partner(BaseModel):
     name: str
     email: str
@@ -42,6 +45,7 @@ class UserRegister(BaseModel):
     dob: str
     country: str
     role: str = "User"
+    authenticate: str = "0"
     suspended: str = "0"
 
 class PartnerRegister(BaseModel):
@@ -59,8 +63,11 @@ class PartnerRegister(BaseModel):
     suspended: str = "0"
 
 class Category(BaseModel):
-    Category: str
-    subCategory: List[str]
+    category: str
+
+class EditedCategory(BaseModel):
+    newCategory: str
+    oldCategory: str
 
 class Product(BaseModel):
     name: str
@@ -69,9 +76,8 @@ class Product(BaseModel):
     description: str
     imageFile: str
     category: str
-    subCategory: str
     email: str
-    tags: list[str]
+    user_id: str
 
 class Rating(BaseModel):
     email: str
