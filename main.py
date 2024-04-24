@@ -438,7 +438,8 @@ def delete_product(product_id: str):
     return result
 
 @app.get("/get_products_by_category/{category}")
-def get_product_by_category(category: str):
+def get_products_by_category(category: str):
     print(category)
     result = get_product_by_category(category)
     return result
+
