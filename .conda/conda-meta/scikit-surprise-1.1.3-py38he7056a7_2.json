@@ -1,0 +1,542 @@
+{
+  "build": "py38he7056a7_2",
+  "build_number": 2,
+  "channel": "https://conda.anaconda.org/conda-forge/win-64",
+  "constrains": [],
+  "depends": [
+    "joblib",
+    "numpy >=1.22.4,<2.0a0",
+    "python >=3.8,<3.9.0a0",
+    "python_abi 3.8.* *_cp38",
+    "scipy",
+    "setuptools",
+    "ucrt >=10.0.20348.0",
+    "vc >=14.2,<15",
+    "vc14_runtime >=14.29.30139"
+  ],
+  "extracted_package_dir": "C:\\Users\\engme\\anaconda3\\pkgs\\scikit-surprise-1.1.3-py38he7056a7_2",
+  "files": [
+    "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/PKG-INFO",
+    "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/SOURCES.txt",
+    "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/dependency_links.txt",
+    "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/entry_points.txt",
+    "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/requires.txt",
+    "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/top_level.txt",
+    "Lib/site-packages/surprise/__init__.py",
+    "Lib/site-packages/surprise/__main__.py",
+    "Lib/site-packages/surprise/__pycache__/__init__.cpython-38.pyc",
+    "Lib/site-packages/surprise/__pycache__/__main__.cpython-38.pyc",
+    "Lib/site-packages/surprise/__pycache__/accuracy.cpython-38.pyc",
+    "Lib/site-packages/surprise/__pycache__/builtin_datasets.cpython-38.pyc",
+    "Lib/site-packages/surprise/__pycache__/dataset.cpython-38.pyc",
+    "Lib/site-packages/surprise/__pycache__/dump.cpython-38.pyc",
+    "Lib/site-packages/surprise/__pycache__/reader.cpython-38.pyc",
+    "Lib/site-packages/surprise/__pycache__/trainset.cpython-38.pyc",
+    "Lib/site-packages/surprise/__pycache__/utils.cpython-38.pyc",
+    "Lib/site-packages/surprise/accuracy.py",
+    "Lib/site-packages/surprise/builtin_datasets.py",
+    "Lib/site-packages/surprise/dataset.py",
+    "Lib/site-packages/surprise/dump.py",
+    "Lib/site-packages/surprise/model_selection/__init__.py",
+    "Lib/site-packages/surprise/model_selection/__pycache__/__init__.cpython-38.pyc",
+    "Lib/site-packages/surprise/model_selection/__pycache__/search.cpython-38.pyc",
+    "Lib/site-packages/surprise/model_selection/__pycache__/split.cpython-38.pyc",
+    "Lib/site-packages/surprise/model_selection/__pycache__/validation.cpython-38.pyc",
+    "Lib/site-packages/surprise/model_selection/search.py",
+    "Lib/site-packages/surprise/model_selection/split.py",
+    "Lib/site-packages/surprise/model_selection/validation.py",
+    "Lib/site-packages/surprise/prediction_algorithms/__init__.py",
+    "Lib/site-packages/surprise/prediction_algorithms/__pycache__/__init__.cpython-38.pyc",
+    "Lib/site-packages/surprise/prediction_algorithms/__pycache__/algo_base.cpython-38.pyc",
+    "Lib/site-packages/surprise/prediction_algorithms/__pycache__/baseline_only.cpython-38.pyc",
+    "Lib/site-packages/surprise/prediction_algorithms/__pycache__/knns.cpython-38.pyc",
+    "Lib/site-packages/surprise/prediction_algorithms/__pycache__/predictions.cpython-38.pyc",
+    "Lib/site-packages/surprise/prediction_algorithms/__pycache__/random_pred.cpython-38.pyc",
+    "Lib/site-packages/surprise/prediction_algorithms/algo_base.py",
+    "Lib/site-packages/surprise/prediction_algorithms/baseline_only.py",
+    "Lib/site-packages/surprise/prediction_algorithms/co_clustering.c",
+    "Lib/site-packages/surprise/prediction_algorithms/co_clustering.cp38-win_amd64.pyd",
+    "Lib/site-packages/surprise/prediction_algorithms/co_clustering.pyx",
+    "Lib/site-packages/surprise/prediction_algorithms/knns.py",
+    "Lib/site-packages/surprise/prediction_algorithms/matrix_factorization.c",
+    "Lib/site-packages/surprise/prediction_algorithms/matrix_factorization.cp38-win_amd64.pyd",
+    "Lib/site-packages/surprise/prediction_algorithms/matrix_factorization.pyx",
+    "Lib/site-packages/surprise/prediction_algorithms/optimize_baselines.c",
+    "Lib/site-packages/surprise/prediction_algorithms/optimize_baselines.cp38-win_amd64.pyd",
+    "Lib/site-packages/surprise/prediction_algorithms/optimize_baselines.pyx",
+    "Lib/site-packages/surprise/prediction_algorithms/predictions.py",
+    "Lib/site-packages/surprise/prediction_algorithms/random_pred.py",
+    "Lib/site-packages/surprise/prediction_algorithms/slope_one.c",
+    "Lib/site-packages/surprise/prediction_algorithms/slope_one.cp38-win_amd64.pyd",
+    "Lib/site-packages/surprise/prediction_algorithms/slope_one.pyx",
+    "Lib/site-packages/surprise/reader.py",
+    "Lib/site-packages/surprise/similarities.c",
+    "Lib/site-packages/surprise/similarities.cp38-win_amd64.pyd",
+    "Lib/site-packages/surprise/similarities.pyx",
+    "Lib/site-packages/surprise/trainset.py",
+    "Lib/site-packages/surprise/utils.py",
+    "Scripts/surprise-script.py",
+    "Scripts/surprise.exe",
+    ".nonadmin"
+  ],
+  "fn": "scikit-surprise-1.1.3-py38he7056a7_2.conda",
+  "license": "BSD-3-Clause",
+  "link": {
+    "source": "C:\\Users\\engme\\anaconda3\\pkgs\\scikit-surprise-1.1.3-py38he7056a7_2",
+    "type": 1
+  },
+  "md5": "5ebfb42a6d0527a58d89bcfec9f21c65",
+  "name": "scikit-surprise",
+  "package_tarball_full_path": "C:\\Users\\engme\\anaconda3\\pkgs\\scikit-surprise-1.1.3-py38he7056a7_2.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/PKG-INFO",
+        "path_type": "hardlink",
+        "sha256": "cb3c94100f22ad3dff53ee584678625ebca2c14d19d274f85599a391d858a8c6",
+        "sha256_in_prefix": "cb3c94100f22ad3dff53ee584678625ebca2c14d19d274f85599a391d858a8c6",
+        "size_in_bytes": 13927
+      },
+      {
+        "_path": "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/SOURCES.txt",
+        "path_type": "hardlink",
+        "sha256": "9ba63ef16813759ea2ee13855651dabc826fcd63ca1c42d69d49ae78a7c37e8f",
+        "sha256_in_prefix": "9ba63ef16813759ea2ee13855651dabc826fcd63ca1c42d69d49ae78a7c37e8f",
+        "size_in_bytes": 3205
+      },
+      {
+        "_path": "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/dependency_links.txt",
+        "path_type": "hardlink",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "sha256_in_prefix": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size_in_bytes": 1
+      },
+      {
+        "_path": "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/entry_points.txt",
+        "path_type": "hardlink",
+        "sha256": "ba33f42d8476b49629227176bcb2d7986db0033a47d6af179d177c696c9f41ca",
+        "sha256_in_prefix": "ba33f42d8476b49629227176bcb2d7986db0033a47d6af179d177c696c9f41ca",
+        "size_in_bytes": 52
+      },
+      {
+        "_path": "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/requires.txt",
+        "path_type": "hardlink",
+        "sha256": "bd87e740ca70afda7e6dc7c4aa1604681c30563082dc274a69917ceb7f1a87d6",
+        "sha256_in_prefix": "bd87e740ca70afda7e6dc7c4aa1604681c30563082dc274a69917ceb7f1a87d6",
+        "size_in_bytes": 41
+      },
+      {
+        "_path": "Lib/site-packages/scikit_surprise-1.1.3-py3.8.egg-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "601fcf7d67abfb0bef86e1dfde1eaf82c638abe2fecb27da9dd3b135c7f67f01",
+        "sha256_in_prefix": "601fcf7d67abfb0bef86e1dfde1eaf82c638abe2fecb27da9dd3b135c7f67f01",
+        "size_in_bytes": 9
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "8d05030339c1876379c7ba9e591a2c79b217881c625bd4050e9a4e9e977476cf",
+        "sha256_in_prefix": "8d05030339c1876379c7ba9e591a2c79b217881c625bd4050e9a4e9e977476cf",
+        "size_in_bytes": 907
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__main__.py",
+        "path_type": "hardlink",
+        "sha256": "67a43f65823042244997ebbe2313a1abe041402c5cd3d086bcc10f3b975aae55",
+        "sha256_in_prefix": "67a43f65823042244997ebbe2313a1abe041402c5cd3d086bcc10f3b975aae55",
+        "size_in_bytes": 6508
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__pycache__/__init__.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "4d4a91c74a5391149a2443844b8b51816c3628957902c7c455a0db8efff101ad",
+        "sha256_in_prefix": "4d4a91c74a5391149a2443844b8b51816c3628957902c7c455a0db8efff101ad",
+        "size_in_bytes": 991
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__pycache__/__main__.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "fbd5b95d8b451bb80d6d5de16063c1b0d839374c20da17b059c2ec6cfef7caff",
+        "sha256_in_prefix": "fbd5b95d8b451bb80d6d5de16063c1b0d839374c20da17b059c2ec6cfef7caff",
+        "size_in_bytes": 5229
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__pycache__/accuracy.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "9d0303085b72f7f2002f0eec0aa48a7573c41b684e6839ffab60d587964ac16d",
+        "sha256_in_prefix": "9d0303085b72f7f2002f0eec0aa48a7573c41b684e6839ffab60d587964ac16d",
+        "size_in_bytes": 4991
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__pycache__/builtin_datasets.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "582c7698a6da32fea899dd1878510fbb44c947ad393335356f6f64c8ea768da5",
+        "sha256_in_prefix": "582c7698a6da32fea899dd1878510fbb44c947ad393335356f6f64c8ea768da5",
+        "size_in_bytes": 2048
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__pycache__/dataset.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "d29091ff0ca0c0b1d98540c9ddcffeeceeb9db4b95a93ecd597cc7bd2d4f90c8",
+        "sha256_in_prefix": "d29091ff0ca0c0b1d98540c9ddcffeeceeb9db4b95a93ecd597cc7bd2d4f90c8",
+        "size_in_bytes": 9387
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__pycache__/dump.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "abb26b70dd8f75d6809e2e430f46b469e98758aafe469aeb18f613e391ce2c65",
+        "sha256_in_prefix": "abb26b70dd8f75d6809e2e430f46b469e98758aafe469aeb18f613e391ce2c65",
+        "size_in_bytes": 2098
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__pycache__/reader.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "71e8927ffb473f3ef8a34e3c74de6882a3c66829268bef031f53eebefa719973",
+        "sha256_in_prefix": "71e8927ffb473f3ef8a34e3c74de6882a3c66829268bef031f53eebefa719973",
+        "size_in_bytes": 3917
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__pycache__/trainset.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "3d51ca4287270ae25fe44fdf89a7755bc1d56025953c06e8f2cd9d1a6e9858dd",
+        "sha256_in_prefix": "3d51ca4287270ae25fe44fdf89a7755bc1d56025953c06e8f2cd9d1a6e9858dd",
+        "size_in_bytes": 9429
+      },
+      {
+        "_path": "Lib/site-packages/surprise/__pycache__/utils.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "79543ebe194035aebea7a1c24929aa6d588d08fa98dbd8bcf2b6d062fc0d043d",
+        "sha256_in_prefix": "79543ebe194035aebea7a1c24929aa6d588d08fa98dbd8bcf2b6d062fc0d043d",
+        "size_in_bytes": 862
+      },
+      {
+        "_path": "Lib/site-packages/surprise/accuracy.py",
+        "path_type": "hardlink",
+        "sha256": "69956a106d437e6852b2e8a0de50e61227397da4685d70c50eb45b5a6bbd5b50",
+        "sha256_in_prefix": "69956a106d437e6852b2e8a0de50e61227397da4685d70c50eb45b5a6bbd5b50",
+        "size_in_bytes": 4859
+      },
+      {
+        "_path": "Lib/site-packages/surprise/builtin_datasets.py",
+        "path_type": "hardlink",
+        "sha256": "36dacdc9f15d42b1749f71b51a9514c9d124bf98fdafaa8a7f00a4a938efbbcd",
+        "sha256_in_prefix": "36dacdc9f15d42b1749f71b51a9514c9d124bf98fdafaa8a7f00a4a938efbbcd",
+        "size_in_bytes": 2381
+      },
+      {
+        "_path": "Lib/site-packages/surprise/dataset.py",
+        "path_type": "hardlink",
+        "sha256": "4c3b01fb27f0cc23044e79521a02e5805fd744516e882b2accf481ba6e94304f",
+        "sha256_in_prefix": "4c3b01fb27f0cc23044e79521a02e5805fd744516e882b2accf481ba6e94304f",
+        "size_in_bytes": 9460
+      },
+      {
+        "_path": "Lib/site-packages/surprise/dump.py",
+        "path_type": "hardlink",
+        "sha256": "cb67dc3365ccc42990395866af5fb1eeedd30f4b22cd014a0ec75d5628ecd485",
+        "sha256_in_prefix": "cb67dc3365ccc42990395866af5fb1eeedd30f4b22cd014a0ec75d5628ecd485",
+        "size_in_bytes": 1916
+      },
+      {
+        "_path": "Lib/site-packages/surprise/model_selection/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "06260d87406e7d5f8c3fbebab7057b96041c30134036caf4b4202878123a89af",
+        "sha256_in_prefix": "06260d87406e7d5f8c3fbebab7057b96041c30134036caf4b4202878123a89af",
+        "size_in_bytes": 427
+      },
+      {
+        "_path": "Lib/site-packages/surprise/model_selection/__pycache__/__init__.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "c3a5d806537609861a486577098c8582d6d8fde64c7a3b9241e6aa4d5f8a3c01",
+        "sha256_in_prefix": "c3a5d806537609861a486577098c8582d6d8fde64c7a3b9241e6aa4d5f8a3c01",
+        "size_in_bytes": 519
+      },
+      {
+        "_path": "Lib/site-packages/surprise/model_selection/__pycache__/search.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "0a22dfceb7b0eef1b6caa9d60d5863db2eb02ccb037536ce155f9fb8a7365236",
+        "sha256_in_prefix": "0a22dfceb7b0eef1b6caa9d60d5863db2eb02ccb037536ce155f9fb8a7365236",
+        "size_in_bytes": 20831
+      },
+      {
+        "_path": "Lib/site-packages/surprise/model_selection/__pycache__/split.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "484051abaaa115ddc0e566cb47514ab02827dc4a6d3c3f0bdb702a212f11827f",
+        "sha256_in_prefix": "484051abaaa115ddc0e566cb47514ab02827dc4a6d3c3f0bdb702a212f11827f",
+        "size_in_bytes": 15135
+      },
+      {
+        "_path": "Lib/site-packages/surprise/model_selection/__pycache__/validation.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "7f3ad7beaba9324dd477d1dfc9127c1bf88648de5f5009ce03a93b026ef7c5f5",
+        "sha256_in_prefix": "7f3ad7beaba9324dd477d1dfc9127c1bf88648de5f5009ce03a93b026ef7c5f5",
+        "size_in_bytes": 8844
+      },
+      {
+        "_path": "Lib/site-packages/surprise/model_selection/search.py",
+        "path_type": "hardlink",
+        "sha256": "f897c9c4ba77c5bab666210b66ebce606f718841dc19b9ed741f119a75847ff4",
+        "sha256_in_prefix": "f897c9c4ba77c5bab666210b66ebce606f718841dc19b9ed741f119a75847ff4",
+        "size_in_bytes": 23931
+      },
+      {
+        "_path": "Lib/site-packages/surprise/model_selection/split.py",
+        "path_type": "hardlink",
+        "sha256": "43333ae9ec19e4219db2e428d56e22f13e4d00218d8bb17af8a3baab1dc58872",
+        "sha256_in_prefix": "43333ae9ec19e4219db2e428d56e22f13e4d00218d8bb17af8a3baab1dc58872",
+        "size_in_bytes": 16905
+      },
+      {
+        "_path": "Lib/site-packages/surprise/model_selection/validation.py",
+        "path_type": "hardlink",
+        "sha256": "a5d8af19fd62731b2a311756e0b868860c8f6c624ff1a1c492060aedf910d852",
+        "sha256_in_prefix": "a5d8af19fd62731b2a311756e0b868860c8f6c624ff1a1c492060aedf910d852",
+        "size_in_bytes": 8500
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "cb6024ce7a7dddca42cead60ffabbae1b54f0409efb4e2898f3ce790e19c0a69",
+        "sha256_in_prefix": "cb6024ce7a7dddca42cead60ffabbae1b54f0409efb4e2898f3ce790e19c0a69",
+        "size_in_bytes": 1115
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/__pycache__/__init__.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "a48546afab77515d996994966b41e70076dbcda8224b2aba1dc0ef6ef1c52bf6",
+        "sha256_in_prefix": "a48546afab77515d996994966b41e70076dbcda8224b2aba1dc0ef6ef1c52bf6",
+        "size_in_bytes": 1285
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/__pycache__/algo_base.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "d9bd99acd926ee98582a93728b1d42934b1b0204873e8041e89d65a4e9d1983e",
+        "sha256_in_prefix": "d9bd99acd926ee98582a93728b1d42934b1b0204873e8041e89d65a4e9d1983e",
+        "size_in_bytes": 10014
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/__pycache__/baseline_only.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "907a7f3bb405f3b6a026c769637d13e28749046fb70954a3d4ed429ed1f0f9de",
+        "sha256_in_prefix": "907a7f3bb405f3b6a026c769637d13e28749046fb70954a3d4ed429ed1f0f9de",
+        "size_in_bytes": 1713
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/__pycache__/knns.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "501c2d10094cd5525d36807181b503cfe4eb06f12f5bd15818696afc22d87ea2",
+        "sha256_in_prefix": "501c2d10094cd5525d36807181b503cfe4eb06f12f5bd15818696afc22d87ea2",
+        "size_in_bytes": 14064
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/__pycache__/predictions.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "6622ffa2d04995aedf2067f089b60d058a0999af853f10f9301f36f9aac45f2e",
+        "sha256_in_prefix": "6622ffa2d04995aedf2067f089b60d058a0999af853f10f9301f36f9aac45f2e",
+        "size_in_bytes": 1823
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/__pycache__/random_pred.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "44fd66c09da8fc4c016d6d0d1888ccf124b5e3fd1820bfeaf5aa9b8ac0af6e88",
+        "sha256_in_prefix": "44fd66c09da8fc4c016d6d0d1888ccf124b5e3fd1820bfeaf5aa9b8ac0af6e88",
+        "size_in_bytes": 1840
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/algo_base.py",
+        "path_type": "hardlink",
+        "sha256": "f35c5abd8df80cc7b45027913f21049fef34eeec0a91104812fc2c47598db429",
+        "sha256_in_prefix": "f35c5abd8df80cc7b45027913f21049fef34eeec0a91104812fc2c47598db429",
+        "size_in_bytes": 10687
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/baseline_only.py",
+        "path_type": "hardlink",
+        "sha256": "c4bce37ed84087265b08944fdaaf3ecad45a481fc9502e4a46b5a391b66787a1",
+        "sha256_in_prefix": "c4bce37ed84087265b08944fdaaf3ecad45a481fc9502e4a46b5a391b66787a1",
+        "size_in_bytes": 1286
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/co_clustering.c",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "D:\\\\bld\\\\scikit-surprise_1696579343717\\\\_h_env",
+        "sha256": "b0cc9c4e3953e412c00bca5c3b28a0c7ae0c2c9b5f86eb195560565dbd1b8224",
+        "sha256_in_prefix": "08515ea918ea5f8d1e73768b2b3f5aea9b9064af5e1268ebfaf0d1c2c5f639f9",
+        "size_in_bytes": 696972
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/co_clustering.cp38-win_amd64.pyd",
+        "path_type": "hardlink",
+        "sha256": "f69034ec408706a31798c8752a26c811b92862bffce81413145568b638ca2aa4",
+        "sha256_in_prefix": "f69034ec408706a31798c8752a26c811b92862bffce81413145568b638ca2aa4",
+        "size_in_bytes": 118272
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/co_clustering.pyx",
+        "path_type": "hardlink",
+        "sha256": "eb3de38c4a467a11c35043bdb2964c6522b3e92005e82588892c860a0231611c",
+        "sha256_in_prefix": "eb3de38c4a467a11c35043bdb2964c6522b3e92005e82588892c860a0231611c",
+        "size_in_bytes": 9880
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/knns.py",
+        "path_type": "hardlink",
+        "sha256": "6b9d8cd393b6746a6d161ba9e320cbed2a380ebbce8a33d11ec989668f2672c1",
+        "sha256_in_prefix": "6b9d8cd393b6746a6d161ba9e320cbed2a380ebbce8a33d11ec989668f2672c1",
+        "size_in_bytes": 13977
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/matrix_factorization.c",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "D:\\\\bld\\\\scikit-surprise_1696579343717\\\\_h_env",
+        "sha256": "5279f92093d913738130677caf95a6ff57f7ad2d2055e085fc1b09e30915347a",
+        "sha256_in_prefix": "0be8820bd06db4ffd13efe8a01ffb9524f89a156089c177d4edaa7076a5cc970",
+        "size_in_bytes": 1703534
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/matrix_factorization.cp38-win_amd64.pyd",
+        "path_type": "hardlink",
+        "sha256": "6203d104a897c00ea63b67178cb5750618084698df0be65c4d1734d65a0173f5",
+        "sha256_in_prefix": "6203d104a897c00ea63b67178cb5750618084698df0be65c4d1734d65a0173f5",
+        "size_in_bytes": 296448
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/matrix_factorization.pyx",
+        "path_type": "hardlink",
+        "sha256": "7a3c546cc55e212d194d40ca27a26af159ed2984a5907b50f022c0c5df6401ed",
+        "sha256_in_prefix": "7a3c546cc55e212d194d40ca27a26af159ed2984a5907b50f022c0c5df6401ed",
+        "size_in_bytes": 32164
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/optimize_baselines.c",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "D:\\\\bld\\\\scikit-surprise_1696579343717\\\\_h_env",
+        "sha256": "c8ee11a6661eaab1fe9ef56a041f5ed0bd04ff935c664e25ad2f70e390f840da",
+        "sha256_in_prefix": "3980a67a1d97ea5d5670b8d1f457897aabd69a8bd02a299687cc38a9c95fb804",
+        "size_in_bytes": 1164341
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/optimize_baselines.cp38-win_amd64.pyd",
+        "path_type": "hardlink",
+        "sha256": "b943b729f1e7240567217573c3565b3d8e241088a5adb0e0ef4f557c3150d1b7",
+        "sha256_in_prefix": "b943b729f1e7240567217573c3565b3d8e241088a5adb0e0ef4f557c3150d1b7",
+        "size_in_bytes": 163328
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/optimize_baselines.pyx",
+        "path_type": "hardlink",
+        "sha256": "de89424985f6509e876eb31788e4bb1aa6d60d3f26f6bdbd0bbf48f04c35327f",
+        "sha256_in_prefix": "de89424985f6509e876eb31788e4bb1aa6d60d3f26f6bdbd0bbf48f04c35327f",
+        "size_in_bytes": 2533
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/predictions.py",
+        "path_type": "hardlink",
+        "sha256": "45db0811236b7dfee2ad6f70857537f0a1c92eaa1e1a0e7d829b6f8e19ecba10",
+        "sha256_in_prefix": "45db0811236b7dfee2ad6f70857537f0a1c92eaa1e1a0e7d829b6f8e19ecba10",
+        "size_in_bytes": 1426
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/random_pred.py",
+        "path_type": "hardlink",
+        "sha256": "23b7dcea75e8c4eb3f2e78ab778022ac4f8b666fd596b408958947e3b9c3a8bd",
+        "sha256_in_prefix": "23b7dcea75e8c4eb3f2e78ab778022ac4f8b666fd596b408958947e3b9c3a8bd",
+        "size_in_bytes": 1241
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/slope_one.c",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "D:\\\\bld\\\\scikit-surprise_1696579343717\\\\_h_env",
+        "sha256": "2847b3ce2789d47b1330f08d8e63dcfd6348e561766588c758678ded52db432a",
+        "sha256_in_prefix": "66744463377655201b4452660a10b6169f1c39017e3085de32b69becaad53c90",
+        "size_in_bytes": 1275374
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/slope_one.cp38-win_amd64.pyd",
+        "path_type": "hardlink",
+        "sha256": "3a1cd46b92700f94def87a3ec253b90c1497d14cf65da52542e395991defcb22",
+        "sha256_in_prefix": "3a1cd46b92700f94def87a3ec253b90c1497d14cf65da52542e395991defcb22",
+        "size_in_bytes": 183808
+      },
+      {
+        "_path": "Lib/site-packages/surprise/prediction_algorithms/slope_one.pyx",
+        "path_type": "hardlink",
+        "sha256": "6d82ccf48f497b700a4f84590ee5448006476c5f85380789133f38a12f9c947c",
+        "sha256_in_prefix": "6d82ccf48f497b700a4f84590ee5448006476c5f85380789133f38a12f9c947c",
+        "size_in_bytes": 2797
+      },
+      {
+        "_path": "Lib/site-packages/surprise/reader.py",
+        "path_type": "hardlink",
+        "sha256": "730b5d181e2fbf7ab9bf33d8256c0e9d4033febc815b4f8a214b2a068ad6a9f1",
+        "sha256_in_prefix": "730b5d181e2fbf7ab9bf33d8256c0e9d4033febc815b4f8a214b2a068ad6a9f1",
+        "size_in_bytes": 3726
+      },
+      {
+        "_path": "Lib/site-packages/surprise/similarities.c",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "D:\\\\bld\\\\scikit-surprise_1696579343717\\\\_h_env",
+        "sha256": "9940fcf01142f981e50e972d66a4e5a36044eadd2b36d171aa9e60e58f57f946",
+        "sha256_in_prefix": "fa41864d6bc98b11cd21cca5a31b099fa3ccbb5c9d10215d55b80042bb9fcc82",
+        "size_in_bytes": 1293105
+      },
+      {
+        "_path": "Lib/site-packages/surprise/similarities.cp38-win_amd64.pyd",
+        "path_type": "hardlink",
+        "sha256": "c20532b1358d0fbf4ccaca05cb20283934cc1fd036ee09450b78800e89b9a7b5",
+        "sha256_in_prefix": "c20532b1358d0fbf4ccaca05cb20283934cc1fd036ee09450b78800e89b9a7b5",
+        "size_in_bytes": 206848
+      },
+      {
+        "_path": "Lib/site-packages/surprise/similarities.pyx",
+        "path_type": "hardlink",
+        "sha256": "1bad5dbdaa20abed968f34ed445bd98fb8692d6aaa6143af3ef7a4eede521611",
+        "sha256_in_prefix": "1bad5dbdaa20abed968f34ed445bd98fb8692d6aaa6143af3ef7a4eede521611",
+        "size_in_bytes": 11206
+      },
+      {
+        "_path": "Lib/site-packages/surprise/trainset.py",
+        "path_type": "hardlink",
+        "sha256": "bb74b8230842f9c4f276cd9caca9e79f6f0b3ee4e040b88e743ecfa98c4c1d10",
+        "sha256_in_prefix": "bb74b8230842f9c4f276cd9caca9e79f6f0b3ee4e040b88e743ecfa98c4c1d10",
+        "size_in_bytes": 8518
+      },
+      {
+        "_path": "Lib/site-packages/surprise/utils.py",
+        "path_type": "hardlink",
+        "sha256": "feb9544e07671820a641a9c3e08318c64a5cecde11f0054c2d7d36edb9e94bf2",
+        "sha256_in_prefix": "feb9544e07671820a641a9c3e08318c64a5cecde11f0054c2d7d36edb9e94bf2",
+        "size_in_bytes": 799
+      },
+      {
+        "_path": "Scripts/surprise-script.py",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "D:\\bld\\scikit-surprise_1696579343717\\_h_env",
+        "sha256": "b4227bb78e9a39e8bb6777c21bf3ffe4a13caf1420baad8aa90afb1e6f8857f3",
+        "sha256_in_prefix": "e6a173b7c9cd12bf549d4ddea331ce05da26f22da1fa825bdfccdbd961f92bfe",
+        "size_in_bytes": 1055
+      },
+      {
+        "_path": "Scripts/surprise.exe",
+        "path_type": "hardlink",
+        "sha256": "bbb3de5707629e6a60a0c238cd477b28f07f0066982fda953fa6fcec39073a4a",
+        "sha256_in_prefix": "bbb3de5707629e6a60a0c238cd477b28f07f0066982fda953fa6fcec39073a4a",
+        "size_in_bytes": 14336
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "scikit-surprise",
+  "sha256": "9d356027f2dd778abb96e9de1d34a7a7b14f1df37a95dfe3766cbee691de0069",
+  "size": 493865,
+  "subdir": "win-64",
+  "timestamp": 1696579930000,
+  "url": "https://conda.anaconda.org/conda-forge/win-64/scikit-surprise-1.1.3-py38he7056a7_2.conda",
+  "version": "1.1.3"
+}
