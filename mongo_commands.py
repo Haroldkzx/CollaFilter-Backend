@@ -261,8 +261,9 @@ def del_product(productid):
 
 def get_product_by_category(category):
     col, _ = connect(PRODUCTS_COLLECTION)
-    print(col)
     query = {"category": category}
     projection = {"_id" : 0}
     result = col.find(query, projection)
-    return list(result)
+    product_list = list(result)  # Convert cursor to list of documents
+    print(product_list)
+    return product_list
