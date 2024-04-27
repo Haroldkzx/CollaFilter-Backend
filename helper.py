@@ -18,12 +18,3 @@ def isValidPassword(input_password, hashed_password):
 
 def generate_unique_token():
     return secrets.token_urlsafe(20) #make longer to decrease randomness
-
-# user_ids = [str(uuid4()) for _ in range(500)]
-
-# # Create a DataFrame with the user IDs
-# df = pd.DataFrame({'user_id': user_ids})
-
-# # Save the DataFrame to an Excel file
-# df.to_excel('user_ids.xlsx', index=False)
-
