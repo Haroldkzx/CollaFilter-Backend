@@ -19,4 +19,5 @@ mongodb_commands.py ( communication to database )
 # pip install secrets
 # pip install datetime
 # python -m uvicorn main:app --reload
+# pip install pandas pymongo openpyxl
 # Str(uuid4())

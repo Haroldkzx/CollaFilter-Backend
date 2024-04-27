@@ -79,6 +79,7 @@ emailauthenticationhtml = """
 
 @app.post("/forgetpassword")
 async def forget_password(email: ForgetPasswordRequest):
+    print("Enter: /forgetpassword")
     user = get_user(email.email)
 
     if not user:
@@ -98,6 +99,8 @@ async def forget_password(email: ForgetPasswordRequest):
     
     fm = FastMail(conf)
     await fm.send_message(message)  # Await the send_message method
+
+    print("Exit: /forgetpassword")
 
     return "Reset password instructions sent to your email"
 
@@ -448,10 +451,10 @@ def get_products_by_category(category: str):
 # def get_partner_report()
 
 
-user_ids = [str(uuid4()) for _ in range(5000)]
+# user_ids = [str(uuid4()) for _ in range(5000)]
 
-# Create a DataFrame with the user IDs
-df = pd.DataFrame({'user_id': user_ids})
+# # Create a DataFrame with the user IDs
+# df = pd.DataFrame({'user_id': user_ids})
 
-# Save the DataFrame to an Excel file
-df.to_excel('user_ids.xlsx', index=False)
+# # Save the DataFrame to an Excel file
+# df.to_excel('user_ids.xlsx', index=False)
