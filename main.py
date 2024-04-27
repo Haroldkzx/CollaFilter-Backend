@@ -2,6 +2,7 @@ from typing import Union
 from uuid import uuid4
 
 from fastapi.encoders import jsonable_encoder
+import pandas as pd
 
 from helper import hash_password, isValidPassword, generate_unique_token
 from model import EditedCategory, Email, LoginDetails, Partner, PartnerRegister, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData, userID
@@ -443,3 +444,14 @@ def get_products_by_category(category: str):
     result = get_product_by_category(category)
     return result
 
+# @app.post("/get_partnerreport")
+# def get_partner_report()
+
+
+user_ids = [str(uuid4()) for _ in range(5000)]
+
+# Create a DataFrame with the user IDs
+df = pd.DataFrame({'user_id': user_ids})
+
+# Save the DataFrame to an Excel file
+df.to_excel('user_ids.xlsx', index=False)
