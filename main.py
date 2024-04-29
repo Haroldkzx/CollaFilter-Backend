@@ -63,7 +63,7 @@ resetpasswordhtml = """
     <head></head>
     <body>
         <h1>Reset Password Instructions</h1>
-        <p>To reset your password, click on the following link: <a href="http://localhost:3000/resetpassword/{token}">Reset Password</a></p>
+        <p>To reset your password, click on the following link: <a href="http://http://collafilter.s3-website-ap-southeast-2.amazonaws.com/resetpassword/{token}">Reset Password</a></p>
     </body>
 </html>
 """
@@ -73,7 +73,7 @@ emailauthenticationhtml = """
     <head></head>
     <body>
         <h1>Authenticate account Instructions</h1>
-        <p>To authenticate your account, click on the following link: <a href="http://localhost:3000/resetpassword/{token}">Reset Password</a></p>
+        <p>To authenticate your account, click on the following link: <a href="http://collafilter.s3-website-ap-southeast-2.amazonaws.com/resetpassword/{token}">Authenticate Password</a></p>
     </body>
 </html>
 """
@@ -225,7 +225,7 @@ async def registeruser(register_user : UserRegister, response: Response):
     message = MessageSchema(
         subject="Account Verification",
         recipients=[register_user.email],
-        body=f"Click the following link to verify your account: <a href='http://localhost:3000/VerifyEmail/{verification_token}'>Verify Account</a>",
+        body=f"Click the following link to verify your account: <a href='http://http://collafilter.s3-website-ap-southeast-2.amazonaws.com/VerifyEmail/{verification_token}'>Verify Account</a>",
         subtype="html"
     )
 
