@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 from pydantic import BaseModel
 
@@ -47,6 +48,7 @@ class UserRegister(BaseModel):
     role: str = "User"
     authenticate: str = "0"
     suspended: str = "0"
+    date_registered: str = datetime.now().strftime("%Y-%m-%d")
 
 class PartnerRegister(BaseModel):
     name: str
@@ -61,6 +63,7 @@ class PartnerRegister(BaseModel):
     role: str = "Partner"
     authenticate: str = "0"
     suspended: str = "0"
+    date_registered: str = datetime.now().strftime("%Y-%m-%d")
 
 class Category(BaseModel):
     category: str
