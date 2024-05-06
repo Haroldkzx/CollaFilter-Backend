@@ -28,16 +28,15 @@ import random
 app = FastAPI()
 
 app.add_middleware(
-       CORSMiddleware,
-       allow_origins=[
-                "*"
-           "http://collafilter.s3-website-ap-southeast-2.amazonaws.com",  # Replace this with your actual frontend domain
-           "http://localhost:3000",  # Allow localhost for development purposes
-       ],
-       allow_credentials=True,
-       allow_methods=["*"],  # Allows all methods
-       allow_headers=["*"],  # Allows all headers
-   )
+    CORSMiddleware,
+    allow_origins=[
+        "http://collafilter.s3-website-ap-southeast-2.amazonaws.com",  # Frontend domain
+        "http://localhost:3000",  # Development localhost
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],  # Allowing all HTTP methods
+    allow_headers=["*"],  # Allowing all headers
+)
 
 # User Database (for demonstration purposes)
 users = {}
