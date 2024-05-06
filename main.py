@@ -31,8 +31,8 @@ app.add_middleware(
        CORSMiddleware,
        allow_origins=[
                 "*"
-        #    "https://main.d39b3cqqpyh4r6.amplifyapp.com",  # Replace this with your actual frontend domain
-        #    "http://localhost:3000",  # Allow localhost for development purposes
+           "http://collafilter.s3-website-ap-southeast-2.amazonaws.com",  # Replace this with your actual frontend domain
+           "http://localhost:3000",  # Allow localhost for development purposes
        ],
        allow_credentials=True,
        allow_methods=["*"],  # Allows all methods
@@ -174,16 +174,19 @@ def login(login_details: LoginDetails, response: Response):
     if not user:
         print("Invalid username or password 1")
         response.status_code = status.HTTP_401_UNAUTHORIZED
-        return "Invalid username or password"
+        return "Invalid email or password"
     print(user)
     if user:
         # check if password match
         if not isValidPassword(password, user["password"]):
             response.status_code = status.HTTP_401_UNAUTHORIZED
-            return "Invalid username or password 2"
+            return "Invalid email or password"
         if user["role"] == "Partner" and user["authenticate"] == "0":
             response.status_code = status.HTTP_401_UNAUTHORIZED
             return "Awaiting admin approval"
+        if user["role"] == "User" and user["authenticate"] == "0":
+            response.status_code = status.HTTP_401_UNAUTHORIZED
+            return "Awaiting email verification"
         if user["suspended"] == "1":
             response.status_code = status.HTTP_401_UNAUTHORIZED
             return "Account suspended"
