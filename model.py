@@ -85,7 +85,7 @@ class Product(BaseModel):
 class Rating(BaseModel):
     email: str
     product_id: str
-    rating: str
+    rating: int
 
 class SessionState(BaseModel):
     email: str

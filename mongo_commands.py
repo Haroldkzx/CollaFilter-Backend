@@ -6,7 +6,7 @@ client = MongoClient("mongodb+srv://admin:admin@cluster0.immhkre.mongodb.net/Col
 ACCOUNT_COLLECTION = "accounts"
 PRODUCTS_COLLECTION ='products'
 CATEGORY_COLLECTION ='categories'
-RATING_COLLECTION = 'ratings'
+RATINGS_COLLECTION = 'ratings'
 RESET_COLLECTION = 'Resets'
 
 
@@ -59,7 +59,7 @@ def put_account(account_details):
     return result
 
 def put_rating(rating_details):
-    col, _ = connect(RATING_COLLECTION)
+    col, _ = connect(RATINGS_COLLECTION)
     doc = {**rating_details}
     result = col.insert_one(doc)
     return result
@@ -267,3 +267,21 @@ def get_product_by_category(category):
     product_list = list(result)  # Convert cursor to list of documents
     print(product_list)
     return product_list
+
+def get_averagerating(productid):
+    col, _ = connect(RATINGS_COLLECTION)
+    query = {"product_id": productid}
+    result = col.find(query)
+
+    total_rating = 0
+    count = 0
+    for rating_doc in result:
+        total_rating += rating_doc['rating']
+        count += 1
+
+    if count == 0:
+        return None  # Return None if no ratings found for the product_id
+    else:
+        averagerating = total_rating / count  # Calculate average rating
+        return round(averagerating, 1)
+

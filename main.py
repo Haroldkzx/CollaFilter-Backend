@@ -6,7 +6,7 @@ import pandas as pd
 
 from helper import hash_password, isValidPassword, generate_unique_token
 from model import EditedCategory, Email, LoginDetails, Partner, PartnerRegister, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData, userID
-from mongo_commands import activate_user, add_category, authenticate_partner, del_product, delete_token_data, get_allproducts, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, reject_partner, store_reset_token, suspend_user, update_authenticate_email, update_category, update_password, update_user, delete_category
+from mongo_commands import activate_user, add_category, authenticate_partner, del_product, delete_token_data, get_allproducts, get_averagerating, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, reject_partner, store_reset_token, suspend_user, update_authenticate_email, update_category, update_password, update_user, delete_category
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 import uvicorn
 import time
@@ -225,7 +225,7 @@ async def registeruser(register_user : UserRegister, response: Response):
     message = MessageSchema(
         subject="Account Verification",
         recipients=[register_user.email],
-        body=f"Click the following link to verify your account: <a href='http://http://collafilter.s3-website-ap-southeast-2.amazonaws.com/VerifyEmail/{verification_token}'>Verify Account</a>",
+        body=f"Click the following link to verify your account: <a href='http://collafilter.s3-website-ap-southeast-2.amazonaws.com/VerifyEmail/{verification_token}'>Verify Account</a>",
         subtype="html"
     )
 
@@ -284,7 +284,7 @@ def get_userdetails(email : Email):
 @app.post("/add_product")
 def add_product(product: Product, response: Response):
     product_data = product.model_dump()
-    put_product({'product_id': str(uuid4()), **product_data})
+    put_product({'product_id': str(uuid4()), **product_data, 'clicks' : 0})
     return "Product added successfully"
 
 @app.get("/get_useraccounts")
@@ -448,14 +448,15 @@ def get_products_by_category(category: str):
     result = get_product_by_category(category)
     return result
 
+
+
+@app.get("/get_average_rating/{product_id}")
+def get_average_rating(product_id: str):
+    result = get_averagerating(product_id)
+    return result
+
+
+
 # @app.post("/get_partnerreport")
 # def get_partner_report()
 
-
-# user_ids = [str(uuid4()) for _ in range(5000)]
-
-# # Create a DataFrame with the user IDs
-# df = pd.DataFrame({'user_id': user_ids})
-
-# # Save the DataFrame to an Excel file
-# df.to_excel('user_ids.xlsx', index=False)
