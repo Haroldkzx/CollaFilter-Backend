@@ -4,8 +4,8 @@ import secrets
 client = MongoClient("mongodb+srv://admin:admin@cluster0.immhkre.mongodb.net/CollaFilter")
 
 ACCOUNT_COLLECTION = "accounts"
-PRODUCTS_COLLECTION ='products'
-CATEGORY_COLLECTION ='categories'
+PRODUCTS_COLLECTION = 'products'
+CATEGORY_COLLECTION = 'categories'
 RATINGS_COLLECTION = 'ratings'
 RESET_COLLECTION = 'Resets'
 
@@ -285,3 +285,35 @@ def get_averagerating(productid):
         averagerating = total_rating / count  # Calculate average rating
         return round(averagerating, 1)
 
+def updated_product(product_id, updated_data):
+    col, _ = connect(PRODUCTS_COLLECTION)
+    query = {"product_id": product_id}
+    update = {"$set": updated_data}
+    
+    # Update the document with the new data
+    result = col.update_one(query, update)
+    if result.modified_count == 1:
+        # Document was updated successfully
+        print("changed")
+        return "updated"
+    else:
+        # Document was not updated (either not found or no changes)
+        print("no changed")
+        return "no changes"
+    
+def total_users():
+    col, _ = connect(ACCOUNT_COLLECTION)
+    query = {"role": "User"}
+    user_count = col.count_documents(query)
+    return user_count
+
+def total_partners():
+    col, _ = connect(ACCOUNT_COLLECTION)
+    query = {"role": "Partner"}
+    user_count = col.count_documents(query)
+    return user_count
+
+def total_products():
+    col, _ = connect(PRODUCTS_COLLECTION)
+    user_count = col.estimated_document_count()
+    return user_count

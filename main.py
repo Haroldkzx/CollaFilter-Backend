@@ -5,8 +5,9 @@ from fastapi.encoders import jsonable_encoder
 import pandas as pd
 
 from helper import hash_password, isValidPassword, generate_unique_token
-from model import EditedCategory, Email, LoginDetails, Partner, PartnerRegister, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData, userID
-from mongo_commands import activate_user, add_category, authenticate_partner, del_product, delete_token_data, get_allproducts, get_averagerating, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, reject_partner, store_reset_token, suspend_user, update_authenticate_email, update_category, update_password, update_user, delete_category
+from machine_learning import CollaFilterRecommender
+from model import EditedCategory, Email, LoginDetails, Partner, PartnerRegister, UpdateProductNoImage, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData, UpdateProduct, userID
+from mongo_commands import activate_user, add_category, authenticate_partner, del_product, delete_token_data, get_allproducts, get_averagerating, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, reject_partner, store_reset_token, suspend_user, total_partners, total_products, total_users, update_authenticate_email, update_category, update_password, update_user, delete_category, updated_product
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 import uvicorn
 import time
@@ -451,14 +452,53 @@ def get_products_by_category(category: str):
     return result
 
 
-
 @app.get("/get_average_rating/{product_id}")
 def get_average_rating(product_id: str):
     result = get_averagerating(product_id)
     return result
 
 
+@app.post("/update_product")
+def update_product(product: UpdateProduct):
+    print(product)
+    product_id = product.product_id
+    updated_data = product.dict(exclude={"product_id"})  # Exclude product_id from the updated data
+    print(updated_data)
+    print(product_id)
+    result = updated_product(product_id, updated_data)
+    return result
 
-# @app.post("/get_partnerreport")
-# def get_partner_report()
+@app.post("/update_product_noimage")
+def update_product(product: UpdateProductNoImage):
+    print(product)
+    product_id = product.product_id
+    updated_data = product.dict(exclude={"product_id"})  # Exclude product_id from the updated data
+    print(updated_data)
+    print(product_id)
+    result = updated_product(product_id, updated_data)
+    return result
+
+@app.get("/get_totalusers")
+def total_userscount():
+    result = total_users()
+    return result
+
+@app.get("/get_totalblogshops")
+def total_partnerscount():
+    result = total_partners()
+    return result
+
+@app.get("/get_totalproducts")
+def total_productscount():
+    result = total_products()
+    return result
+
+
+@app.get("/recommendations/{user_id}")
+def get_recommendations(user_id: str):
+    try:
+        recommendations = CollaFilterRecommender(user_id)
+        return recommendations
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
