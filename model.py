@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 
@@ -111,4 +111,20 @@ class UpdatedUserData(BaseModel):
     name: str
     phone: str
     country: str
-   
+
+class UpdateProduct(BaseModel):
+    name: str
+    price: str
+    link: str
+    description: str
+    imageFile: str
+    category: str
+    product_id: str
+
+class UpdateProductNoImage(BaseModel):
+    name: str
+    price: str
+    link: str
+    description: str
+    category: str
+    product_id: str
