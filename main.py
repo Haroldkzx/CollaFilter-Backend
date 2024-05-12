@@ -1,14 +1,18 @@
 from typing import Union
 from uuid import uuid4
+import uuid
 
 from fastapi.encoders import jsonable_encoder
 import pandas as pd
 
 from helper import hash_password, isValidPassword, generate_unique_token
 from machine_learning import CollaFilterRecommender
-from model import EditedCategory, Email, LoginDetails, Partner, PartnerRegister, UpdateProductNoImage, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData, UpdateProduct, userID
-from mongo_commands import activate_user, add_category, authenticate_partner, del_product, delete_token_data, get_allproducts, get_averagerating, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, reject_partner, store_reset_token, suspend_user, total_partners, total_products, total_users, update_authenticate_email, update_category, update_password, update_user, delete_category, updated_product
+from model import Bookmark, EditedCategory, Email, LoginDetails, Partner, PartnerRegister, SendEmail, UpdateProductNoImage, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData, UpdateProduct, userID
+from mongo_commands import activate_user, add_category, add_rating, authenticate_partner, bookmark_product, del_product, delete_token_data, get_allproducts, get_averagerating, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, increment_count, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, recommended_product, reject_partner, remove_bookmark, store_reset_token, suspend_user, total_partners, total_products, total_users, update_authenticate_email, update_category, update_password, update_user, delete_category, updated_product
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
+from machine_learning import CollaFilterRecommender
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import asyncio
 import uvicorn
 import time
 
@@ -23,10 +27,12 @@ from fastapi import (
     APIRouter,
     Request,
     Body,
+    Form,
 )
 import random
 
 app = FastAPI()
+scheduler = AsyncIOScheduler()
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,6 +50,34 @@ users = {}
 
 # In-memory session storage (for demonstration purposes)
 sessions = {}
+
+
+# ML
+
+DB_URI = "mongodb+srv://admin:admin@cluster0.immhkre.mongodb.net/?retryWrites=true&w=majority"
+DB_NAME = 'CollaFilter'
+
+recommender = CollaFilterRecommender(DB_URI, DB_NAME)
+
+@app.on_event("startup")
+async def startup_event():
+    start_time = time.time()
+    recommender.load_data()
+    recommender.train_model()
+    process_time = time.time() - start_time
+    print(f"Recommendation system took {process_time} seconds")
+
+scheduler.add_job(startup_event, "interval", hours = 1)
+scheduler.start()
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    print(f"API call to {request.url.path} took {process_time} seconds")
+    return response
 
 
 
@@ -77,6 +111,27 @@ emailauthenticationhtml = """
     </body>
 </html>
 """
+
+@app.post("/send_email")
+async def send_email(sendemail : SendEmail):
+    # Compose email message
+    message_content = f"Name: {sendemail.name}\nPhone Number: {sendemail.number}\nEmail: {sendemail.email}\nMessage: {sendemail.message}"
+
+    # Create FastMail instance
+    fastmail = FastMail(conf)
+
+    # Send email
+    await fastmail.send_message(
+        MessageSchema(
+            subject="About us enquiry",
+            recipients=["collafilter@gmail.com"],  # Specify the email address where you want to receive the form submissions
+            body=message_content,
+            subtype="plain"
+        )
+    )
+
+    return {"message": "Email sent successfully"}
+
 
 @app.post("/forgetpassword")
 async def forget_password(email: ForgetPasswordRequest):
@@ -258,9 +313,9 @@ def registerpartner(register_partner: PartnerRegister, response: Response):
 # ============================== Ratings ==============================
 @app.post("/add_rating")
 def add_ratings(ratings: Rating):
-    rating_data = ratings.model_dump()
-    put_product({**rating_data})
-    return "Rating inserted"
+    ratings.timestamp = int(time.time())
+    result = add_rating(ratings)
+    return result
 
 # ============================== Retrieve Categories / Subcategories ==============================
 
@@ -493,12 +548,31 @@ def total_productscount():
     result = total_products()
     return result
 
-
-@app.get("/recommendations/{user_id}")
-def get_recommendations(user_id: str):
+@app.get('/recommendations/{user_id}')
+async def get_recommendations(user_id: str):
+    max_recommendations = 50  # You can modify this as needed
     try:
-        recommendations = CollaFilterRecommender(user_id)
-        return recommendations
+        recommendations = recommender.get_recommendations(user_id, max_recommendations)
+        return {"recommendations": recommendations}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get('/get_recommended_products/{product_id}')
+def get_recommended_products(product_id : str):
+    result = recommended_product(product_id)
+    return result
 
+@app.post('/add_bookmark')
+def add_bookmark(bookmark : Bookmark):
+    result = bookmark_product(bookmark.user_id,bookmark.product_id)
+    return result
+
+@app.post('/remove_bookmark')
+def del_bookmark(bookmark : Bookmark):
+    result = remove_bookmark(bookmark.user_id,bookmark.product_id)
+    return result
+
+@app.post('/add_count/{product_id}')
+def add_count(product_id : str):
+    result = increment_count(product_id)
+    return result
