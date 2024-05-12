@@ -1,9 +1,12 @@
 from pymongo import MongoClient
+from bson import Binary
+import uuid
 import secrets
 
 client = MongoClient("mongodb+srv://admin:admin@cluster0.immhkre.mongodb.net/CollaFilter")
 
 ACCOUNT_COLLECTION = "accounts"
+BOOKMARK_COLLECTION = "bookmarks"
 PRODUCTS_COLLECTION = 'products'
 CATEGORY_COLLECTION = 'categories'
 RATINGS_COLLECTION = 'ratings'
@@ -265,7 +268,6 @@ def get_product_by_category(category):
     projection = {"_id" : 0}
     result = col.find(query, projection)
     product_list = list(result)  # Convert cursor to list of documents
-    print(product_list)
     return product_list
 
 def get_averagerating(productid):
@@ -317,3 +319,50 @@ def total_products():
     col, _ = connect(PRODUCTS_COLLECTION)
     user_count = col.estimated_document_count()
     return user_count
+
+def add_rating(rating_data):
+    col, _ = connect(RATINGS_COLLECTION)
+    rating_dict = rating_data.dict()
+    result = col.insert_one(rating_dict)
+    if result.acknowledged:
+        print("rating added")
+        return "Rating added successfully"
+    else:
+        print("rating not added")
+        return "Failed to add rating"
+    
+def recommended_product(product_id):
+    col, _ = connect(PRODUCTS_COLLECTION)
+    query = {"product_id": product_id}
+    projection = {"_id" : 0}
+    result = col.find_one(query, projection)
+    return result
+    
+def bookmark_product(user_id, product_id):
+    col, _ = connect(BOOKMARK_COLLECTION)
+    query = {"user_id": user_id}
+    existing_user = col.find_one(query)
+
+    if existing_user:
+        # Update the existing document by adding product_id to the bookmarks array
+        col.update_one(query, {"$addToSet": {"bookmarks": product_id}})
+        return "Product bookmarked successfully."
+        print("Product bookmarked successfully.")
+    else:
+        # If the user document doesn't exist, create a new one and add the product_id
+        new_user_doc = {"user_id": user_id, "bookmarks": [product_id]}
+        col.insert_one(new_user_doc)
+        return "New user bookmark record created."
+    
+def remove_bookmark(user_id, product_id):
+    col, _ = connect(BOOKMARK_COLLECTION)
+    col.update_one({"user_id": user_id}, {"$pull": {"bookmarks": product_id}})
+    return "Product bookmark removed successfully."
+
+def increment_count(product_id):
+    col, _ = connect(PRODUCTS_COLLECTION)
+    query = {"product_id": product_id}
+    update = {"$inc": {"clicks": 1}}  # Increment the clicks field by 1
+    col.update_one(query, update)
+    return "Count increased"
+

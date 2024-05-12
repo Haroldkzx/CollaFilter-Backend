@@ -72,6 +72,12 @@ class EditedCategory(BaseModel):
     newCategory: str
     oldCategory: str
 
+class SendEmail(BaseModel):
+    name : str
+    number : str
+    email : str
+    message : str
+
 class Product(BaseModel):
     name: str
     price: str
@@ -79,13 +85,13 @@ class Product(BaseModel):
     description: str
     imageFile: str
     category: str
-    email: str
     user_id: str
 
 class Rating(BaseModel):
-    email: str
     product_id: str
+    user_id: str
     rating: int
+    timestamp: int = None
 
 class SessionState(BaseModel):
     email: str
@@ -128,3 +134,7 @@ class UpdateProductNoImage(BaseModel):
     description: str
     category: str
     product_id: str
+
+class Bookmark(BaseModel):
+    product_id: str
+    user_id: str
