@@ -366,3 +366,14 @@ def increment_count(product_id):
     col.update_one(query, update)
     return "Count increased"
 
+def retrieve_items(user_id):
+    col, _ = connect(BOOKMARK_COLLECTION)
+    query = {"user_id": user_id}
+    result = col.find_one(query)
+    if result:
+        return result["bookmarks"]
+    else:
+        return []
+
+    
+

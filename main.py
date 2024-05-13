@@ -8,7 +8,7 @@ import pandas as pd
 from helper import hash_password, isValidPassword, generate_unique_token
 from machine_learning import CollaFilterRecommender
 from model import Bookmark, EditedCategory, Email, LoginDetails, Partner, PartnerRegister, SendEmail, UpdateProductNoImage, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData, UpdateProduct, userID
-from mongo_commands import activate_user, add_category, add_rating, authenticate_partner, bookmark_product, del_product, delete_token_data, get_allproducts, get_averagerating, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, increment_count, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, recommended_product, reject_partner, remove_bookmark, store_reset_token, suspend_user, total_partners, total_products, total_users, update_authenticate_email, update_category, update_password, update_user, delete_category, updated_product
+from mongo_commands import activate_user, add_category, add_rating, authenticate_partner, bookmark_product, del_product, delete_token_data, get_allproducts, get_averagerating, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, increment_count, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, recommended_product, reject_partner, remove_bookmark, retrieve_items, store_reset_token, suspend_user, total_partners, total_products, total_users, update_authenticate_email, update_category, update_password, update_user, delete_category, updated_product
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 from machine_learning import CollaFilterRecommender
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -39,6 +39,7 @@ app.add_middleware(
     allow_origins=[
         "http://collafilter.s3-website-ap-southeast-2.amazonaws.com",  # Frontend domain
         "http://localhost:3000",  # Development localhost
+        "https://dtfwpwh6-3000.asse.devtunnels.ms" #Liveshare
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Allowing all HTTP methods
@@ -59,25 +60,25 @@ DB_NAME = 'CollaFilter'
 
 recommender = CollaFilterRecommender(DB_URI, DB_NAME)
 
-# @app.on_event("startup")
-# async def startup_event():
-#     start_time = time.time()
-#     recommender.load_data()
-#     recommender.train_model()
-#     process_time = time.time() - start_time
-#     print(f"Recommendation system took {process_time} seconds")
+@app.on_event("startup")
+async def startup_event():
+    start_time = time.time()
+    recommender.load_data()
+    recommender.train_model()
+    process_time = time.time() - start_time
+    print(f"Recommendation system took {process_time} seconds")
 
-# scheduler.add_job(startup_event, "interval", hours = 1)
-# scheduler.start()
+scheduler.add_job(startup_event, "interval", hours = 1)
+scheduler.start()
 
-# @app.middleware("http")
-# async def add_process_time_header(request: Request, call_next):
-#     start_time = time.time()
-#     response = await call_next(request)
-#     process_time = time.time() - start_time
-#     response.headers["X-Process-Time"] = str(process_time)
-#     print(f"API call to {request.url.path} took {process_time} seconds")
-#     return response
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    print(f"API call to {request.url.path} took {process_time} seconds")
+    return response
 
 
 
@@ -575,4 +576,9 @@ def del_bookmark(bookmark : Bookmark):
 @app.post('/add_count/{product_id}')
 def add_count(product_id : str):
     result = increment_count(product_id)
+    return result
+
+@app.get('/get_bookmarked_items/{user_id}')
+def get_bookmarked_items(user_id:str):
+    result = retrieve_items(user_id)
     return result
