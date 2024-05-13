@@ -59,25 +59,25 @@ DB_NAME = 'CollaFilter'
 
 recommender = CollaFilterRecommender(DB_URI, DB_NAME)
 
-@app.on_event("startup")
-async def startup_event():
-    start_time = time.time()
-    recommender.load_data()
-    recommender.train_model()
-    process_time = time.time() - start_time
-    print(f"Recommendation system took {process_time} seconds")
+# @app.on_event("startup")
+# async def startup_event():
+#     start_time = time.time()
+#     recommender.load_data()
+#     recommender.train_model()
+#     process_time = time.time() - start_time
+#     print(f"Recommendation system took {process_time} seconds")
 
-scheduler.add_job(startup_event, "interval", hours = 1)
-scheduler.start()
+# scheduler.add_job(startup_event, "interval", hours = 1)
+# scheduler.start()
 
-@app.middleware("http")
-async def add_process_time_header(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    response.headers["X-Process-Time"] = str(process_time)
-    print(f"API call to {request.url.path} took {process_time} seconds")
-    return response
+# @app.middleware("http")
+# async def add_process_time_header(request: Request, call_next):
+#     start_time = time.time()
+#     response = await call_next(request)
+#     process_time = time.time() - start_time
+#     response.headers["X-Process-Time"] = str(process_time)
+#     print(f"API call to {request.url.path} took {process_time} seconds")
+#     return response
 
 
 
