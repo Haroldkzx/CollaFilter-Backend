@@ -120,7 +120,7 @@ class UpdatedUserData(BaseModel):
 
 class UpdateProduct(BaseModel):
     name: str
-    price: str
+    price: float
     link: str
     description: str
     imageFile: str
@@ -129,7 +129,7 @@ class UpdateProduct(BaseModel):
 
 class UpdateProductNoImage(BaseModel):
     name: str
-    price: str
+    price: float
     link: str
     description: str
     category: str
