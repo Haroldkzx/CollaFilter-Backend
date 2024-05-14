@@ -549,12 +549,34 @@ def total_productscount():
     result = total_products()
     return result
 
+# @app.get('/recommendations/{user_id}')
+# async def get_recommendations(user_id: str):
+#     max_recommendations = 50  # You can modify this as needed
+#     try:
+#         recommendations = recommender.get_recommendations(user_id, max_recommendations)
+#         return {"recommendations": recommendations}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 @app.get('/recommendations/{user_id}')
 async def get_recommendations(user_id: str):
-    max_recommendations = 50  # You can modify this as needed
     try:
-        recommendations = recommender.get_recommendations(user_id, max_recommendations)
-        return {"recommendations": recommendations}
+        # Default max_recommendations for user-based approach
+        max_recommendations_user_based = 1000
+        recommendations = recommender.get_recommendations(user_id, max_recommendations_user_based)
+        
+        if recommendations and recommendations != ["No recommendations available due to data inconsistency or input errors."]:
+            return {"type": "User-Based", "recommendations": recommendations}
+        else:
+            # Adjust max_recommendations for demographic-based approach
+            max_recommendations_demographic_based = 100
+            if user_id in recommender.user_demo_data['user_id'].values:
+                recommendations = recommender.get_recommendations_based_on_demographics(user_id, max_recommendations_demographic_based)
+                if recommendations:
+                    return {"type": "Demographic-Based", "recommendations": recommendations}
+                else:
+                    raise HTTPException(status_code=404, detail="No demographic-based recommendations available.")
+            else:
+                raise HTTPException(status_code=404, detail="User not found in any collection.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
