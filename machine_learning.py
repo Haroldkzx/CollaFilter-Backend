@@ -16,23 +16,15 @@ class CollaFilterRecommender:
         self.trainset = None
         self.testset = None
         self.algo = None
+        self.similarities = None  # Initialize similarities here
 
     def load_data(self):
         ratings_data = list(self.ratings_collection.find())
         ratings_df = pd.DataFrame(ratings_data)
-
         if not ratings_df.empty:
             ratings_df['user_id'] = ratings_df['user_id'].apply(lambda x: str(x))
             ratings_df['product_id'] = ratings_df['product_id'].apply(lambda x: str(x))
             ratings_df['rating'] = ratings_df['rating'].astype(int)
-
-        print("Data loaded into DataFrame:")
-        print(ratings_df.head())
-        print("\nData Description:")
-        print(ratings_df.describe())
-        print("\nNumber of unique users:", ratings_df['user_id'].nunique())
-        print("Number of unique products:", ratings_df['product_id'].nunique())
-
         data = Dataset.load_from_df(ratings_df[['user_id', 'product_id', 'rating']], Reader(rating_scale=(1, 5)))
         self.dataset = data.build_full_trainset()
         self.trainset = self.dataset
@@ -43,8 +35,9 @@ class CollaFilterRecommender:
         self.algo = KNNBasic(sim_options=sim_options)
         self.algo.fit(self.trainset)
         self.similarities = self.algo.compute_similarities()
+        print("Model trained and similarities computed successfully.")
 
-    def get_recommendations(self, user_id, top_n=1000):
+    def get_recommendations(self, user_id, top_n=10):
         recommendations = []
         try:
             UUID(user_id)  # Validate UUID format
@@ -53,32 +46,39 @@ class CollaFilterRecommender:
             return ["Invalid user ID format."]
         
         try:
-            test_subject_iid = self.trainset.to_inner_uid(user_id)
-            test_subject_ratings = self.trainset.ur[test_subject_iid]
-            k_neighbours = heapq.nlargest(top_n, test_subject_ratings, key=lambda t: t[1])
+            user_inner_id = self.trainset.to_inner_uid(user_id)
+        except ValueError:
+            # Fallback for users not found in trainset
+            all_products = list(set([self.trainset.to_raw_iid(i) for i in self.trainset.all_items()]))
+            recommendations = random.sample(all_products, min(len(all_products), top_n))
+            print(f"User not found in ratings. Generating random recommendations for {user_id}")
+            return recommendations
 
-            candidates = defaultdict(float)
-            for itemID, rating in k_neighbours:
-                if itemID < len(self.similarities):
-                    similarities = self.similarities[itemID]
-                    for innerID, score in enumerate(similarities):
-                        if innerID < len(self.similarities):
-                            candidates[innerID] += score * (rating / 5.0)
+        # Get the top-N neighbors for the user
+        neighbors = []
+        for other in self.trainset.all_users():
+            if other != user_inner_id:
+                distance = self.algo.sim[user_inner_id, other]
+                neighbors.append((other, distance))
+        
+        # Sort neighbors by similarity
+        neighbors = sorted(neighbors, key=lambda x: x[1], reverse=True)[:top_n]
 
-            watched = {itemID for itemID, _ in self.trainset.ur[test_subject_iid]}
-            sorted_candidates = sorted(candidates.items(), key=lambda x: x[1], reverse=True)
-            top_candidates = sorted_candidates[:top_n * 3]
+        # Compute weighted sum of ratings from neighbors
+        candidates = defaultdict(float)
+        for neighbor, score in neighbors:
+            for itemID, rating in self.trainset.ur[neighbor]:
+                candidates[itemID] += score * (rating / 5.0)
 
-            selected_items = random.sample(top_candidates, min(len(top_candidates), top_n))
-            for itemID, _ in selected_items:
-                if itemID not in watched:
-                    raw_item_id = self.trainset.to_raw_iid(itemID)
-                    recommendations.append(raw_item_id)
-                    if len(recommendations) >= top_n:
-                        break
-        except Exception as e:
-            print(f"Unexpected error: {e}")
-            recommendations = ["No recommendations available due to data inconsistency or input errors."]
+        # Filter items user has already rated
+        watched = {itemID for itemID, _ in self.trainset.ur[user_inner_id]}
+        sorted_candidates = sorted(candidates.items(), key=lambda x: x[1], reverse=True)
+        for itemID, score in sorted_candidates:
+            if itemID not in watched:
+                raw_item_id = self.trainset.to_raw_iid(itemID)
+                recommendations.append(raw_item_id)
+                if len(recommendations) >= top_n:
+                    break
         
         return recommendations
 
@@ -98,7 +98,8 @@ if __name__ == "__main__":
     recommender.train_model()
     mse = recommender.calculate_mse()
     print(f"Mean Squared Error: {mse}")
-    user_uuid_str = '73f75fda-0d30-489c-99ca-e97e0ff3104e'
+    user_uuid_str = '706d8e81-7430-4c43-b797-67510ea05892'
     recommendations = recommender.get_recommendations(user_uuid_str)
     for rec in recommendations:
         print("Recommended Item:", rec)
+

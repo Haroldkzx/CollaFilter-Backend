@@ -374,6 +374,33 @@ def retrieve_items(user_id):
         return result["bookmarks"]
     else:
         return []
+    
+def update_recentlyviewed(user_id, product_id, max_length=10):
+    col, _ = connect(BOOKMARK_COLLECTION)
+    # Remove the oldest product if the array length exceeds max_length
+    col.update_one(
+        {"user_id": user_id},
+        {"$push": {"recent": {"$each": [product_id], "$slice": -max_length}}},
+        upsert=True  # Create the document if it doesn't exist
+    )
+    return "Added to recently viewed"
+
+def retrieve_recentlyviewed(user_id):
+    col, _ = connect(BOOKMARK_COLLECTION)
+    query = {"user_id": user_id}
+    result = col.find_one(query)
+    if result:
+        return result.get("recent", [])
+    else:
+        return []
+    
+def retrieve_allcategories():
+    col, _ = connect(CATEGORY_COLLECTION)
+    categories = col.distinct("category")
+    return categories
+
+
+
 
     
 
