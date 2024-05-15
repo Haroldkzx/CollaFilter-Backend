@@ -92,9 +92,13 @@ def update_authenticate_email(email):
         return "Unable to authenticate"
 # ========================================
 def store_reset_token(email, token):
-    col, _= connect(RESET_COLLECTION)
+    col, _ = connect(RESET_COLLECTION)
+    if col.find_one({"email": email}):
+        raise ValueError("Email already exists")
+    
     query = {"email": email, "token": token}
     result = col.insert_one(query)
+    print("Inserted")
     return result
 
 def get_reset_token(email):
