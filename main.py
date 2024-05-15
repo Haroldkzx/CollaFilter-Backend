@@ -143,23 +143,27 @@ async def forget_password(email: ForgetPasswordRequest):
         raise HTTPException(status_code=404, detail="User not found")
 
     token = generate_unique_token()
-
-    store_reset_token(email.email, token)
-
-    # Send reset password instructions to the user's email
-    message = MessageSchema(
-        subject="Password Reset Instructions",
-        recipients=[email.email],
-        body=resetpasswordhtml.replace("{token}", token),
-        subtype="html"
-    )
+    try:
+        store_reset_token(email.email, token)
+        # Send reset password instructions to the user's email
+        message = MessageSchema(
+            subject="Password Reset Instructions",
+            recipients=[email.email],
+            body=resetpasswordhtml.replace("{token}", token),
+            subtype="html"
+        )
     
-    fm = FastMail(conf)
-    await fm.send_message(message)  # Await the send_message method
+        fm = FastMail(conf)
+        await fm.send_message(message)  # Await the send_message method
 
-    print("Exit: /forgetpassword")
+        print("Exit: /forgetpassword")
 
-    return "Reset password instructions sent to your email"
+        return "Reset password instructions sent to your email"
+    except ValueError as e:
+        print("Error: ", e)
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 
 @app.get("/verifytoken/{token}")
 def verify_token(token: str):
@@ -562,7 +566,7 @@ def total_productscount():
 async def get_recommendations(user_id: str):
     try:
         # Default max_recommendations for user-based approach
-        max_recommendations_user_based = 1000
+        max_recommendations_user_based = 200
         recommendations = recommender.get_recommendations(user_id, max_recommendations_user_based)
         
         if recommendations and recommendations != ["No recommendations available due to data inconsistency or input errors."]:
