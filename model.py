@@ -138,3 +138,7 @@ class UpdateProductNoImage(BaseModel):
 class Bookmark(BaseModel):
     product_id: str
     user_id: str
+
+class Recent(BaseModel):
+    product_id: str
+    user_id: str
