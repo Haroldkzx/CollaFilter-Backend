@@ -1,6 +1,5 @@
 from typing import Union
 from uuid import uuid4
-import uuid
 
 from fastapi.encoders import jsonable_encoder
 import pandas as pd
@@ -40,18 +39,11 @@ app.add_middleware(
     allow_origins=[
         "http://collafilter.s3-website-ap-southeast-2.amazonaws.com",  # Frontend domain
         "http://localhost:3000",  # Development localhost
-        "https://dtfwpwh6-3000.asse.devtunnels.ms" #Liveshare
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Allowing all HTTP methods
     allow_headers=["*"],  # Allowing all headers
 )
-
-# User Database (for demonstration purposes)
-users = {}
-
-# In-memory session storage (for demonstration purposes)
-sessions = {}
 
 
 # ML
@@ -69,6 +61,7 @@ async def startup_event():
     process_time = time.time() - start_time
     print(f"Recommendation system took {process_time} seconds")
 
+
 scheduler.add_job(startup_event, "interval", minutes = 10)
 scheduler.start()
 
@@ -83,7 +76,8 @@ async def add_process_time_header(request: Request, call_next):
 
 
 
-# ======================================= RESET PASSWORD ========================================
+# ================================================== TOKEN RELATED ==================================================
+
 conf = ConnectionConfig(
     MAIL_USERNAME = "collafilter@gmail.com",
     MAIL_PASSWORD = "wbyo slqi yljy ztot",
@@ -114,27 +108,6 @@ emailauthenticationhtml = """
 </html>
 """
 
-@app.post("/send_email")
-async def send_email(sendemail : SendEmail):
-    # Compose email message
-    message_content = f"Name: {sendemail.name}\nPhone Number: {sendemail.number}\nEmail: {sendemail.email}\nMessage: {sendemail.message}"
-
-    # Create FastMail instance
-    fastmail = FastMail(conf)
-
-    # Send email
-    await fastmail.send_message(
-        MessageSchema(
-            subject="About us enquiry",
-            recipients=["collafilter@gmail.com"],  # Specify the email address where you want to receive the form submissions
-            body=message_content,
-            subtype="plain"
-        )
-    )
-
-    return {"message": "Email sent successfully"}
-
-
 @app.post("/forgetpassword")
 async def forget_password(email: ForgetPasswordRequest):
     print("Enter: /forgetpassword")
@@ -163,29 +136,7 @@ async def forget_password(email: ForgetPasswordRequest):
     except ValueError as e:
         print("Error: ", e)
         raise HTTPException(status_code=400, detail=str(e))
-
-
-
-@app.get("/verifytoken/{token}")
-def verify_token(token: str):
-    # Check if the token is valid (e.g., exists in the database)
-    if get_token(token):
-        return {"valid": True}
-    else:
-        return {"valid": False}
     
-@app.get("/verifyemail/{token}")
-def verify_emailtoken(token: str):
-    # Check if the token is valid (e.g., exists in the database)
-    if get_token(token):
-        email_token = get_email_from_token(token)
-        email = email_token["email"]
-        update_authenticate_email(email)
-        delete_token_data(token)
-        return {"authenticated": True}
-    else:
-        return {"authenticated": False}
-
 @app.post("/resetpassword")
 def reset_password(reset : Resets, response: Response):
     token = reset.token
@@ -208,23 +159,67 @@ def reset_password(reset : Resets, response: Response):
     response.status_code = status.HTTP_404_NOT_FOUND
     return {"message": "Email not found"}
 
-# ======================================= RESET PASSWORD ========================================
 
-
-def get_session(email, uuid):
-    session_uuid = sessions["email"]
-    if uuid == session_uuid:
-        return sessions["email"]
+@app.get("/verifytoken/{token}")
+def verify_token(token: str):
+    # Check if the token is valid (e.g., exists in the database)
+    if get_token(token):
+        return {"valid": True}
     else:
-        return False
+        return {"valid": False}
+    
+@app.get("/verifyemail/{token}")
+def verify_emailtoken(token: str):
+    # Check if the token is valid (e.g., exists in the database)
+    if get_token(token):
+        email_token = get_email_from_token(token)
+        email = email_token["email"]
+        update_authenticate_email(email)
+        delete_token_data(token)
+        return {"authenticated": True}
+    else:
+        return {"authenticated": False}
+    
+# ================================================== ENQUIRY ==================================================
+    
+@app.post("/send_email")
+async def send_email(sendemail : SendEmail):
+    # Compose email message
+    message_content = f"Name: {sendemail.name}\nPhone Number: {sendemail.number}\nEmail: {sendemail.email}\nMessage: {sendemail.message}"
 
+    # Create FastMail instance
+    fastmail = FastMail(conf)
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+    # Send email
+    await fastmail.send_message(
+        MessageSchema(
+            subject="About us enquiry",
+            recipients=["collafilter@gmail.com"],  # Specify the email address where you want to receive the form submissions
+            body=message_content,
+            subtype="plain"
+        )
+    )
 
+    return {"message": "Email sent successfully"}
 
-# ============================== LOGIN ==============================
+# ================================================== HOMEPAGE FUNCTIONS ==================================================
+
+@app.get("/get_totalusers")
+def total_userscount():
+    result = total_users()
+    return result
+
+@app.get("/get_totalblogshops")
+def total_partnerscount():
+    result = total_partners()
+    return result
+
+@app.get("/get_totalproducts")
+def total_productscount():
+    result = total_products()
+    return result
+
+# ================================================== LOGIN FUNCTIONS ==================================================
 @app.post("/login")
 def login(login_details: LoginDetails, response: Response):
     email = login_details.email
@@ -252,10 +247,8 @@ def login(login_details: LoginDetails, response: Response):
             response.status_code = status.HTTP_401_UNAUTHORIZED
             return "Account suspended"
 
-    ## all checks done
     print(user)
     user_session = {**user, "session_uuid": uuid4(), "role": user["role"]}
-    sessions[user["email"]] = user_session
     return user_session
 
 @app.post("/logout")
@@ -266,7 +259,8 @@ def logout(response: Response):
     # You can also clear any other session-related data if needed
     return {"message": "Logged out successfully!"}
 
-# ============================== Register ==============================
+# ================================================== REGISTER ACCOUNTS ==================================================\
+
 @app.post("/registeruser")
 async def registeruser(register_user : UserRegister, response: Response):
     if not all(register_user.model_dump().values()):
@@ -316,49 +310,7 @@ def registerpartner(register_partner: PartnerRegister, response: Response):
     put_account({'user_id': str(uuid4()), **register_data})
     return "Partner Registered successfully"
 
-# ============================== Ratings ==============================
-@app.post("/add_rating")
-def add_ratings(ratings: Rating):
-    ratings.timestamp = int(time.time())
-    result = add_rating(ratings)
-    result_recent = update_recentlyviewed(ratings.user_id,ratings.product_id)
-    return result, result_recent
-
-# ============================== Retrieve Categories / Subcategories ==============================
-
-@app.get("/get_categories")
-def get_categories(response: Response):
-    categories = get_category()
-    print(categories)
-    return {"categories": categories}
-
-@app.get("/get_subcategories")
-def get_subcategories(category: str):
-    if category in get_category:
-        return {"subcategories": get_category[category]}
-    else:
-        raise HTTPException(status_code=404, detail="Category not found")
-
-@app.post("/get_userdetails")
-def get_userdetails(email : Email):
-    user = get_user(email.email)
-    return {"accounts": user}
-
-
-# ============================== Add Product ==============================
-@app.post("/add_product")
-def add_product(product: Product, response: Response):
-    product_data = product.model_dump()
-    put_product({'product_id': str(uuid4()), **product_data, 'clicks' : 0})
-    return "Product added successfully"
-
-@app.get("/get_useraccounts")
-def get_user_accounts():
-    accounts = get_useraccounts() 
-    print(accounts)
-    return {"accounts": accounts}
-
-# ============================== User Account ==============================
+# ================================================== UPDATE ACCOUNTS  ==================================================
 
 @app.post("/update_user_data")
 def update_user_data(data: User):
@@ -391,27 +343,25 @@ def update_partner_data(data: Partner):
         print("uh oh")
         return {"error": str(e)}
 
+# ================================================== ADMIN FUNCTIONS ==================================================
 
-# ============================== Partner Account ==============================
 @app.get("/get_partneraccounts")
 def get_partner_accounts(response: Response):
     accounts = get_partneraccounts() 
     print(accounts)
     return {"accounts": accounts}
 
-@app.post("/suspend_user")
-def suspend_partner_account( email : Email):
-    user = email.email
-    partner = get_user(user)
+@app.get("/get_useraccounts")
+def get_user_accounts():
+    accounts = get_useraccounts() 
+    print(accounts)
+    return {"accounts": accounts}
 
-    if not partner:
-        raise HTTPException(status_code=404, detail="Partner not found")
-
-    result = suspend_user(user)
-    if result.modified_count == 0:
-        raise HTTPException(status_code=500, detail="Failed to suspend partner")
-
-    return {"message": "Partner suspended successfully"}
+@app.get("/get_unregpartneraccounts")
+def get_unregpartner_accounts(response: Response):
+    accounts = get_unregpartneraccounts() 
+    print(accounts)
+    return {"accounts": accounts}
 
 @app.post("/activate_user")
 def activate_partner_account( email : Email):
@@ -426,14 +376,22 @@ def activate_partner_account( email : Email):
     if result.modified_count == 0:
         raise HTTPException(status_code=500, detail="Failed to activate partner")
 
-    return {"message": "Partner suspended successfully"}
+    return {"message": "User activated successfully"}
 
-# ============================== Unregister Partner Account ==============================
-@app.get("/get_unregpartneraccounts")
-def get_unregpartner_accounts(response: Response):
-    accounts = get_unregpartneraccounts() 
-    print(accounts)
-    return {"accounts": accounts}
+@app.post("/suspend_user")
+def suspend_partner_account( email : Email):
+    user = email.email
+    partner = get_user(user)
+
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+
+    result = suspend_user(user)
+    if result.modified_count == 0:
+        raise HTTPException(status_code=500, detail="Failed to suspend partner")
+
+    return {"message": "User suspended successfully"}
+
 
 @app.post("/authenticate_partner")
 def authenticate_partner_account(email : Email):
@@ -448,7 +406,7 @@ def authenticate_partner_account(email : Email):
     if result.modified_count == 0:
         raise HTTPException(status_code=500, detail="Failed to activate partner")
 
-    return {"message": "Partner suspended successfully"}
+    return {"message": "Partner authenticated successfully"}
 
 @app.post("/reject_partner")
 def suspend_partner_account(email : Email):
@@ -463,24 +421,7 @@ def suspend_partner_account(email : Email):
     if result.deleted_count == 0:
         raise HTTPException(status_code=500, detail="Failed to suspend partner")
 
-    return {"message": "Partner suspended successfully"}
-
-@app.post("/get_products")
-def get_product(user_id : userID):
-    id=user_id.user_id
-    products = get_products(id)
-    return {"products": products}
-
-@app.get("/get_allproducts") 
-def get_all_products():
-    products = get_allproducts()
-    return {"products": products}
-
-@app.get("/get_allproducts")
-def get_all_products(page_number: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100)):
-    skip = (page_number - 1) * page_size
-    products = get_allproducts(page_size, skip)
-    return {"products": products}
+    return {"message": "Partner rejected successfully"}
 
 @app.post("/delete_category")
 def del_category(category: Category):
@@ -502,29 +443,8 @@ def edit_categories(category: EditedCategory):
     result = update_category(old_cat,new_cat)
     return result
 
-@app.get("/get_partner_name/{user_id}")
-def get_partner_name(user_id: str):
-   result = get_partnername(user_id)
-   print(result)
-   return result
 
-@app.post("/delete_product/{product_id}")
-def delete_product(product_id: str):
-    result = del_product(product_id)
-    return result
-
-@app.get("/get_products_by_category/{category}")
-def get_products_by_category(category: str):
-    print(category)
-    result = get_product_by_category(category)
-    return result
-
-
-@app.get("/get_average_rating/{product_id}")
-def get_average_rating(product_id: str):
-    result = get_averagerating(product_id)
-    return result
-
+# ================================================== PARTNER FUNCTIONS  ==================================================
 
 @app.post("/update_product")
 def update_product(product: UpdateProduct):
@@ -546,20 +466,18 @@ def update_product(product: UpdateProductNoImage):
     result = updated_product(product_id, updated_data)
     return result
 
-@app.get("/get_totalusers")
-def total_userscount():
-    result = total_users()
+@app.post("/add_product")
+def add_product(product: Product, response: Response):
+    product_data = product.model_dump()
+    put_product({'product_id': str(uuid4()), **product_data, 'clicks' : 0})
+    return "Product added successfully"
+
+@app.get("/get_average_rating/{product_id}")
+def get_average_rating(product_id: str):
+    result = get_averagerating(product_id)
     return result
 
-@app.get("/get_totalblogshops")
-def total_partnerscount():
-    result = total_partners()
-    return result
-
-@app.get("/get_totalproducts")
-def total_productscount():
-    result = total_products()
-    return result
+# ================================================== RECOMMENDATION SYSTEM  ==================================================
 
 @app.get('/recommendations/{user_id}')
 async def get_recommendations(user_id: str):
@@ -569,16 +487,37 @@ async def get_recommendations(user_id: str):
         return {"recommendations": recommendations}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+# Enpoint to get You May Also Like
+@app.get("/additional-recommendations/{user_id}")
+async def get_additional_recommendations(user_id: str):
+    # This endpoint returns only the next 1000 products not included in the initial recommendations
+    additional_recommendations = recommender.get_additional_recommendations(user_id, 2)
+    return {"additional_recommendations": additional_recommendations}
+
+# ================================================== USER FUNCTIONS ==================================================
+
 @app.get('/get_recommended_products/{product_id}')
 def get_recommended_products(product_id: str, user_id: str = Query(...)):
     result = recommended_product(product_id, user_id)
+    return result
+
+@app.get('/get_recent_products/{product_id}')
+def get_recent_products(product_id: str):
+    result = get_bookmarks(product_id)
     return result
 
 @app.get('/get_bookmarked_products/{product_id}')
 def get_recommended_products(product_id: str):
     result = get_bookmarks(product_id)
     return result
+
+@app.post("/add_rating")
+def add_ratings(ratings: Rating):
+    ratings.timestamp = int(time.time())
+    result = add_rating(ratings)
+    result_recent = update_recentlyviewed(ratings.user_id,ratings.product_id)
+    return result, result_recent
 
 @app.post('/add_bookmark')
 def add_bookmark(bookmark : Bookmark):
@@ -605,7 +544,48 @@ def get_recently_viewed(user_id: str):
     result = retrieve_recentlyviewed(user_id)
     return result
 
+@app.get("/get_products_by_category/{category}")
+def get_products_by_category(category: str):
+    print(category)
+    result = get_product_by_category(category)
+    return result 
+
+# ================================================== UNIVERSAL FUNCTIONS ==================================================
+
+@app.post("/get_products")
+def get_product(user_id : userID):
+    id=user_id.user_id
+    products = get_products(id)
+    return {"products": products}
+
+@app.get("/get_allproducts") 
+def get_all_products():
+    products = get_allproducts()
+    return {"products": products}
+
+@app.get("/get_partner_name/{user_id}")
+def get_partner_name(user_id: str):
+   result = get_partnername(user_id)
+   print(result)
+   return result
+
+@app.post("/delete_product/{product_id}")
+def delete_product(product_id: str):
+    result = del_product(product_id)
+    return result  
+
 @app.get('/get_allcategories')
 def get_allcategories():
     result = retrieve_allcategories()
     return result
+
+@app.get("/get_categories")
+def get_categories(response: Response):
+    categories = get_category()
+    print(categories)
+    return {"categories": categories}
+
+@app.post("/get_userdetails")
+def get_userdetails(email : Email):
+    user = get_user(email.email)
+    return {"accounts": user}

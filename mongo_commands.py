@@ -165,7 +165,6 @@ def reject_partner(email):
     result = col.delete_one(query)
     return result
 
-
 def activate_user(email):
     col, _ = connect(ACCOUNT_COLLECTION) 
     query = {"email": email} 
