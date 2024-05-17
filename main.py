@@ -39,6 +39,7 @@ app.add_middleware(
     allow_origins=[
         "http://collafilter.s3-website-ap-southeast-2.amazonaws.com",  # Frontend domain
         "http://localhost:3000",  # Development localhost
+        "https://dtfwpwh6-3000.asse.devtunnels.ms", #Liveshare
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Allowing all HTTP methods
