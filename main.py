@@ -26,6 +26,7 @@ from fastapi import (
     HTTPException,
     APIRouter,
     Request,
+    Query,
     Body,
     Form,
 )
@@ -68,7 +69,7 @@ async def startup_event():
     process_time = time.time() - start_time
     print(f"Recommendation system took {process_time} seconds")
 
-scheduler.add_job(startup_event, "interval", hours = 1)
+scheduler.add_job(startup_event, "interval", minutes = 10)
 scheduler.start()
 
 @app.middleware("http")
@@ -366,7 +367,7 @@ def update_user_data(data: User):
         print("before")
         is_updated = update_user(email, data)
         if is_updated:
-            return {"message": "User data updated successfully!!!"}
+            return {"message": "Profile updated successfully!!!"}
         else:
             return {"message": "No changes or document not found."}
     
@@ -381,7 +382,7 @@ def update_partner_data(data: Partner):
         email = data.email
         is_updated = update_user(email, data)
         if is_updated:
-            return {"message": "User data updated successfully!!!"}
+            return {"message": "Profile updated successfully!"}
         else:
             return {"message": "No changes or document not found."}
     
@@ -470,9 +471,15 @@ def get_product(user_id : userID):
     products = get_products(id)
     return {"products": products}
 
-@app.get("/get_allproducts")
+@app.get("/get_allproducts") 
 def get_all_products():
     products = get_allproducts()
+    return {"products": products}
+
+@app.get("/get_allproducts")
+def get_all_products(page_number: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100)):
+    skip = (page_number - 1) * page_size
+    products = get_allproducts(page_size, skip)
     return {"products": products}
 
 @app.post("/delete_category")
@@ -554,19 +561,11 @@ def total_productscount():
     result = total_products()
     return result
 
-# @app.get('/recommendations/{user_id}')
-# async def get_recommendations(user_id: str):
-#     max_recommendations = 50  # You can modify this as needed
-#     try:
-#         recommendations = recommender.get_recommendations(user_id, max_recommendations)
-#         return {"recommendations": recommendations}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
 @app.get('/recommendations/{user_id}')
 async def get_recommendations(user_id: str):
     try:
         # Default max_recommendations for user-based approach
-        max_recommendations_user_based = 200
+        max_recommendations_user_based = 100
         recommendations = recommender.get_recommendations(user_id, max_recommendations_user_based)
         
         if recommendations and recommendations != ["No recommendations available due to data inconsistency or input errors."]:
@@ -586,8 +585,8 @@ async def get_recommendations(user_id: str):
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.get('/get_recommended_products/{product_id}')
-def get_recommended_products(product_id : str):
-    result = recommended_product(product_id)
+def get_recommended_products(product_id: str, user_id: str = Query(...)):
+    result = recommended_product(product_id, user_id)
     return result
 
 @app.post('/add_bookmark')

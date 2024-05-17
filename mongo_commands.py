@@ -199,7 +199,7 @@ def get_products(userid):
     products = col.find(query, projection)
     return list(products)
 
-def get_allproducts():
+def get_allproducts(): 
     col, _ = connect(PRODUCTS_COLLECTION) 
     projection = {"_id": False} 
     all_products = list(col.find({}, projection))
@@ -335,10 +335,20 @@ def add_rating(rating_data):
         print("rating not added")
         return "Failed to add rating"
     
-def recommended_product(product_id):
+def recommended_product(product_id, user_id: str):
     col, _ = connect(PRODUCTS_COLLECTION)
+    ratings_col, _ = connect(RATINGS_COLLECTION)  # Connect to the ratings collection
+
+    # Check if the user has already rated the product
+    query = {"product_id": product_id, "user_id": user_id}
+    existing_rating = ratings_col.find_one(query)
+    
+    if existing_rating:
+        return {"message": "User has already rated this product"}
+
+    # Fetch the recommended product if no rating exists
     query = {"product_id": product_id}
-    projection = {"_id" : 0}
+    projection = {"_id": 0}
     result = col.find_one(query, projection)
     return result
     
