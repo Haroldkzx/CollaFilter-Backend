@@ -351,6 +351,13 @@ def recommended_product(product_id, user_id: str):
     projection = {"_id": 0}
     result = col.find_one(query, projection)
     return result
+
+def get_bookmarks(product_id):
+    col, _ = connect(PRODUCTS_COLLECTION)
+    query = {"product_id": product_id}
+    projection = {"_id" : 0}
+    result = col.find_one(query, projection)
+    return result
     
 def bookmark_product(user_id, product_id):
     col, _ = connect(BOOKMARK_COLLECTION)

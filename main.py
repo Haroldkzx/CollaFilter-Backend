@@ -8,7 +8,7 @@ import pandas as pd
 from helper import hash_password, isValidPassword, generate_unique_token
 from machine_learning import CollaFilterRecommender
 from model import Bookmark, EditedCategory, Email, LoginDetails, Partner, PartnerRegister, Recent, SendEmail, UpdateProductNoImage, UpdateUserData, User, UserRegister, Product, Category, SessionState, Rating, ConnectionConfig, ForgetPasswordRequest, Resets, UpdatedUserData, UpdateProduct, userID
-from mongo_commands import activate_user, add_category, add_rating, authenticate_partner, bookmark_product, del_product, delete_token_data, get_allproducts, get_averagerating, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, increment_count, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, recommended_product, reject_partner, remove_bookmark, retrieve_allcategories, retrieve_items, retrieve_recentlyviewed, store_reset_token, suspend_user, total_partners, total_products, total_users, update_authenticate_email, update_category, update_password, update_recentlyviewed, update_user, delete_category, updated_product
+from mongo_commands import activate_user, add_category, add_rating, authenticate_partner, bookmark_product, del_product, delete_token_data, get_allproducts, get_averagerating, get_bookmarks, get_product_by_category, get_email_from_token, get_partnername, get_products, get_token, get_unregpartneraccounts, get_user, increment_count, put_product, put_account, get_category, get_useraccounts, get_partneraccounts, recommended_product, reject_partner, remove_bookmark, retrieve_allcategories, retrieve_items, retrieve_recentlyviewed, store_reset_token, suspend_user, total_partners, total_products, total_users, update_authenticate_email, update_category, update_password, update_recentlyviewed, update_user, delete_category, updated_product
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 from machine_learning import CollaFilterRecommender
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -563,7 +563,7 @@ def total_productscount():
 
 @app.get('/recommendations/{user_id}')
 async def get_recommendations(user_id: str):
-    max_recommendations = 100  # You can modify this as needed
+    max_recommendations = 75  # You can modify this as needed
     try:
         recommendations = recommender.get_recommendations(user_id, max_recommendations)
         return {"recommendations": recommendations}
@@ -573,6 +573,11 @@ async def get_recommendations(user_id: str):
 @app.get('/get_recommended_products/{product_id}')
 def get_recommended_products(product_id: str, user_id: str = Query(...)):
     result = recommended_product(product_id, user_id)
+    return result
+
+@app.get('/get_bookmarked_products/{product_id}')
+def get_recommended_products(product_id: str):
+    result = get_bookmarks(product_id)
     return result
 
 @app.post('/add_bookmark')
