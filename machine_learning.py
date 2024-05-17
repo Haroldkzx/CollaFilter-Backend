@@ -37,7 +37,7 @@ class CollaFilterRecommender:
         self.similarities = self.algo.compute_similarities()
         print("Model trained and similarities computed successfully.")
 
-    def get_recommendations(self, user_id, top_n=10):
+    def get_recommendations(self, user_id, top_n=75):
         recommendations = []
         try:
             UUID(user_id)  # Validate UUID format
@@ -81,6 +81,22 @@ class CollaFilterRecommender:
                     break
         
         return recommendations
+
+
+    def get_additional_recommendations(self, user_id, top_n=10):
+        # Retrieve the initial recommendations to exclude them
+        initial_recommendations = self.get_recommendations(user_id, 75)
+
+        # Fetch all possible products
+        all_products = list(set([self.trainset.to_raw_iid(i) for i in self.trainset.all_items()]))
+
+        # Exclude the initial recommendations
+        additional_candidates = [item for item in all_products if item not in initial_recommendations]
+
+        # Generate additional recommendations
+        additional_recommendations = random.sample(additional_candidates, min(len(additional_candidates), top_n))
+
+        return additional_recommendations
 
     def predict_ratings(self):
         predictions = self.algo.test(self.testset)
