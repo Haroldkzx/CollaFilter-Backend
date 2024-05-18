@@ -1,6 +1,6 @@
-helper.py ( for creating the functions)
+helper.py ( for creating the functions )
 
-main.py ( reponsible for api calling)
+main.py ( reponsible for api calling )
 
 model.py ( structure of form )
 
